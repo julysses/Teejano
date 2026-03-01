@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teejano Agency</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <span class="brand-logo">🤠</span>
+    <span class="brand-name">TEEJANO</span>
+    <span class="brand-sub">AGENCY</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#" data-page="dashboard" class="active">
+      <span class="nav-icon">◈</span> Dashboard
+    </a></li>
+    <li><a href="#" data-page="drops">
+      <span class="nav-icon">⬡</span> Drops
+    </a></li>
+    <li><a href="#" data-page="cowork">
+      <span class="nav-icon">⟳</span> Cowork
+    </a></li>
+    <li><a href="#" data-page="finalists">
+      <span class="nav-icon">★</span> Finalists
+    </a></li>
+    <li><a href="#" data-page="marketing">
+      <span class="nav-icon">◎</span> Marketing
+    </a></li>
+    <li><a href="#" data-page="analytics">
+      <span class="nav-icon">▲</span> Analytics
+    </a></li>
+    <li><a href="#" data-page="config">
+      <span class="nav-icon">⚙</span> Config
+    </a></li>
+  </ul>
+  <div class="sidebar-footer">
+    <div class="week-badge" id="current-week-badge">Loading...</div>
+  </div>
+</nav>
+
+<main class="main-content">
+  <!-- DASHBOARD -->
+  <section id="page-dashboard" class="page active">
+    <div class="page-header">
+      <h1>Dashboard</h1>
+      <button class="btn btn-primary" id="btn-new-drop">+ New Drop</button>
+    </div>
+
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Current Week</div>
+        <div class="stat-value" id="stat-week">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Drops</div>
+        <div class="stat-value" id="stat-total-drops">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Drop Phase</div>
+        <div class="stat-value" id="stat-phase">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Finalists This Week</div>
+        <div class="stat-value" id="stat-finalists">—</div>
+      </div>
+    </div>
+
+    <div class="section-title">Current Drop Pipeline</div>
+    <div class="pipeline-track" id="pipeline-track">
+      <div class="pipeline-step" data-step="cowork">
+        <div class="step-dot"></div>
+        <div class="step-label">Cowork Prompts</div>
+      </div>
+      <div class="pipeline-step" data-step="scoring">
+        <div class="step-dot"></div>
+        <div class="step-label">Score &amp; Select</div>
+      </div>
+      <div class="pipeline-step" data-step="briefs">
+        <div class="step-dot"></div>
+        <div class="step-label">Design Briefs</div>
+      </div>
+      <div class="pipeline-step" data-step="mockups">
+        <div class="step-dot"></div>
+        <div class="step-label">Mockups</div>
+      </div>
+      <div class="pipeline-step" data-step="approval">
+        <div class="step-dot"></div>
+        <div class="step-label">Approval Gate</div>
+      </div>
+      <div class="pipeline-step" data-step="publish">
+        <div class="step-dot"></div>
+        <div class="step-label">Publish</div>
+      </div>
+    </div>
+
+    <div class="quick-actions-grid">
+      <div class="action-card" id="action-start-drop">
+        <div class="action-icon">⬡</div>
+        <div class="action-title">Start New Drop</div>
+        <div class="action-desc">Initialize this week's pipeline &amp; generate cowork prompts</div>
+        <button class="btn btn-primary btn-sm" onclick="startNewDrop()">Start</button>
+      </div>
+      <div class="action-card" id="action-score">
+        <div class="action-icon">★</div>
+        <div class="action-title">Score Concepts</div>
+        <div class="action-desc">Parse cowork responses, score + select finalists</div>
+        <button class="btn btn-secondary btn-sm" onclick="runScoring()">Run Scoring</button>
+      </div>
+      <div class="action-card" id="action-briefs">
+        <div class="action-icon">⬒</div>
+        <div class="action-title">Generate Briefs</div>
+        <div class="action-desc">Design briefs, listings, mockups, marketing pack</div>
+        <button class="btn btn-secondary btn-sm" onclick="runBriefs()">Generate</button>
+      </div>
+      <div class="action-card" id="action-approve">
+        <div class="action-icon">✓</div>
+        <div class="action-title">Approve &amp; Publish</div>
+        <div class="action-desc">Review finalists, approve drop, publish to Shopify</div>
+        <button class="btn btn-danger btn-sm" onclick="goToApproval()">Review</button>
+      </div>
+    </div>
+
+    <div class="section-title">Recent Drops</div>
+    <div class="drops-table" id="recent-drops-table">
+      <div class="table-loading">Loading...</div>
+    </div>
+  </section>
+
+  <!-- DROPS LIST -->
+  <section id="page-drops" class="page">
+    <div class="page-header">
+      <h1>All Drops</h1>
+      <button class="btn btn-primary" onclick="startNewDrop()">+ New Drop</button>
+    </div>
+    <div class="drops-list" id="drops-list">
+      <div class="table-loading">Loading...</div>
+    </div>
+  </section>
+
+  <!-- COWORK -->
+  <section id="page-cowork" class="page">
+    <div class="page-header">
+      <h1>Cowork Prompts</h1>
+      <div class="week-selector">
+        <label>Week</label>
+        <select id="cowork-week-select" onchange="loadCoworkPage()"></select>
+      </div>
+    </div>
+
+    <p class="page-desc">Paste each prompt into the AI tool, then submit the response here.</p>
+
+    <div class="cowork-tabs">
+      <button class="tab-btn active" onclick="switchCoworkTab('chatgpt', this)">ChatGPT</button>
+      <button class="tab-btn" onclick="switchCoworkTab('gemini', this)">Gemini</button>
+      <button class="tab-btn" onclick="switchCoworkTab('design_arena', this)">Design Arena</button>
+    </div>
+
+    <div id="cowork-chatgpt" class="cowork-panel active">
+      <div class="cowork-prompt-header">
+        <span class="cowork-status" id="status-chatgpt">⬡ Not submitted</span>
+        <button class="btn btn-sm btn-outline" onclick="copyPrompt('chatgpt')">Copy Prompt</button>
+      </div>
+      <div class="cowork-split">
+        <div class="cowork-half">
+          <div class="panel-label">PROMPT — Paste into ChatGPT</div>
+          <textarea class="prompt-textarea" id="prompt-chatgpt" readonly placeholder="Start a drop first to generate prompts..."></textarea>
+        </div>
+        <div class="cowork-half">
+          <div class="panel-label">RESPONSE — Paste ChatGPT's reply here</div>
+          <textarea class="response-textarea" id="response-chatgpt" placeholder='Paste the JSON array response here. Must start with [{"CONCEPT_ID": ...'></textarea>
+          <button class="btn btn-primary btn-submit-response" onclick="submitCoworkResponse('chatgpt')">Submit Response</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="cowork-gemini" class="cowork-panel">
+      <div class="cowork-prompt-header">
+        <span class="cowork-status" id="status-gemini">⬡ Not submitted</span>
+        <button class="btn btn-sm btn-outline" onclick="copyPrompt('gemini')">Copy Prompt</button>
+      </div>
+      <div class="cowork-split">
+        <div class="cowork-half">
+          <div class="panel-label">PROMPT — Paste into Gemini</div>
+          <textarea class="prompt-textarea" id="prompt-gemini" readonly placeholder="Start a drop first..."></textarea>
+        </div>
+        <div class="cowork-half">
+          <div class="panel-label">RESPONSE — Paste Gemini's reply here</div>
+          <textarea class="response-textarea" id="response-gemini" placeholder="Paste the JSON array response..."></textarea>
+          <button class="btn btn-primary btn-submit-response" onclick="submitCoworkResponse('gemini')">Submit Response</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="cowork-design_arena" class="cowork-panel">
+      <div class="cowork-prompt-header">
+        <span class="cowork-status" id="status-design_arena">⬡ Not submitted</span>
+        <button class="btn btn-sm btn-outline" onclick="copyPrompt('design_arena')">Copy Prompt</button>
+      </div>
+      <div class="cowork-split">
+        <div class="cowork-half">
+          <div class="panel-label">PROMPT — Paste into Design Arena</div>
+          <textarea class="prompt-textarea" id="prompt-design_arena" readonly placeholder="Start a drop first..."></textarea>
+        </div>
+        <div class="cowork-half">
+          <div class="panel-label">RESPONSE — Paste Design Arena's reply here</div>
+          <textarea class="response-textarea" id="response-design_arena" placeholder="Paste the JSON array response..."></textarea>
+          <button class="btn btn-primary btn-submit-response" onclick="submitCoworkResponse('design_arena')">Submit Response</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cowork-actions">
+      <button class="btn btn-primary" onclick="runScoring()">▶ All Submitted — Run Scoring</button>
+    </div>
+  </section>
+
+  <!-- FINALISTS -->
+  <section id="page-finalists" class="page">
+    <div class="page-header">
+      <h1>Finalists</h1>
+      <div class="week-selector">
+        <label>Week</label>
+        <select id="finalists-week-select" onchange="loadFinalistsPage()"></select>
+      </div>
+    </div>
+    <div id="finalists-container">
+      <div class="table-loading">Select a week to view finalists</div>
+    </div>
+
+    <div class="approval-bar" id="approval-bar" style="display:none">
+      <div class="approval-status" id="approval-status-text">Drop not approved</div>
+      <button class="btn btn-danger" id="btn-approve" onclick="toggleApproval()">Approve Drop</button>
+    </div>
+  </section>
+
+  <!-- MARKETING -->
+  <section id="page-marketing" class="page">
+    <div class="page-header">
+      <h1>Marketing Pack</h1>
+      <div class="week-selector">
+        <label>Week</label>
+        <select id="marketing-week-select" onchange="loadMarketingPage()"></select>
+      </div>
+    </div>
+    <div id="marketing-container">
+      <div class="table-loading">Select a week to view marketing pack</div>
+    </div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section id="page-analytics" class="page">
+    <div class="page-header">
+      <h1>Analytics</h1>
+      <div class="week-selector">
+        <label>Week</label>
+        <select id="analytics-week-select" onchange="loadAnalyticsPage()"></select>
+      </div>
+    </div>
+    <div id="analytics-container">
+      <div class="table-loading">Select a week to view analytics</div>
+    </div>
+  </section>
+
+  <!-- CONFIG -->
+  <section id="page-config" class="page">
+    <div class="page-header">
+      <h1>Configuration</h1>
+    </div>
+    <div class="config-tabs">
+      <button class="tab-btn active" onclick="loadConfig('teejano_rules', this)">Brand Rules</button>
+      <button class="tab-btn" onclick="loadConfig('scoring_rubric', this)">Scoring</button>
+      <button class="tab-btn" onclick="loadConfig('product_defaults', this)">Products</button>
+      <button class="tab-btn" onclick="loadConfig('calendar_config', this)">Calendar</button>
+    </div>
+    <div class="config-editor-wrap">
+      <textarea id="config-editor" class="config-editor"></textarea>
+      <div class="config-actions">
+        <button class="btn btn-primary" onclick="saveConfig()">Save Config</button>
+        <span class="config-save-note" id="config-name-label"></span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast" class="toast"></div>
+
+<!-- LOG DRAWER -->
+<div class="log-drawer" id="log-drawer">
+  <div class="log-header">
+    <span>Pipeline Log</span>
+    <button onclick="closeLog()">✕</button>
+  </div>
+  <pre class="log-content" id="log-content"></pre>
+</div>
+<button class="log-toggle-btn" id="log-toggle-btn" onclick="toggleLog()">◈ Log</button>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -4,13 +4,12 @@
     "module": "commonjs",
     "lib": ["ES2022"],
     "outDir": "./dist",
-    "rootDir": "./scripts",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["scripts/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["scripts/**/*", "server/**/*"],
+  "exclude": ["node_modules", "dist", "public"]
 }
