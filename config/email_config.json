@@ -1,0 +1,49 @@
+{
+  "_comment": "Do NOT hardcode secrets here. Use environment variables. See docs/API_KEYS.md",
+  "primary_provider": "klaviyo",
+  "klaviyo": {
+    "private_key": "${KLAVIYO_PRIVATE_KEY}",
+    "list_id_all_subscribers": "${KLAVIYO_LIST_ID_ALL}",
+    "list_id_engaged": "${KLAVIYO_LIST_ID_ENGAGED}",
+    "from_email": "drops@teejano.com",
+    "from_name": "Teejano",
+    "reply_to": "hello@teejano.com",
+    "utm_source": "klaviyo",
+    "utm_medium": "email"
+  },
+  "fallback_provider": "shopify_email",
+  "sms": {
+    "provider": "postscript",
+    "api_key": "${POSTSCRIPT_API_KEY}",
+    "brand_name": "Teejano",
+    "opt_out_text": "Reply STOP to unsubscribe",
+    "compliance_note": "Include opt-out in every SMS"
+  },
+  "weekly_sequence": {
+    "teaser": {
+      "day": "Wednesday",
+      "time": "10:00",
+      "timezone": "America/Chicago",
+      "subject_tone": "preview/tease"
+    },
+    "drop_live": {
+      "day": "Friday",
+      "time": "09:00",
+      "timezone": "America/Chicago",
+      "subject_tone": "urgency/excitement"
+    },
+    "last_call": {
+      "day": "Sunday",
+      "time": "12:00",
+      "timezone": "America/Chicago",
+      "subject_tone": "scarcity/last chance"
+    },
+    "winner_recap": {
+      "day": "Tuesday",
+      "time": "10:00",
+      "timezone": "America/Chicago",
+      "subject_tone": "social proof/community",
+      "optional": true
+    }
+  }
+}

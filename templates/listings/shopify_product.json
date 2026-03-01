@@ -1,0 +1,49 @@
+{
+  "_template": "Teejano Shopify Product Template v2",
+  "_note": "Replace all {{placeholders}} before posting via API",
+  "product": {
+    "title": "{{title_seo}}",
+    "body_html": "{{description_html}}",
+    "vendor": "Teejano",
+    "product_type": "{{product_type}}",
+    "handle": "{{handle}}",
+    "status": "draft",
+    "tags": "{{tags_comma_separated}}",
+    "variants": [
+      {
+        "option1": "{{size}}",
+        "option2": "{{color}}",
+        "price": "{{price}}",
+        "compare_at_price": "{{compare_at_price}}",
+        "requires_shipping": true,
+        "taxable": true,
+        "inventory_management": null,
+        "fulfillment_service": "manual",
+        "sku": "TJ-{{concept_id}}-{{variant_label}}-{{size_code}}-{{color_code}}"
+      }
+    ],
+    "options": [
+      {"name": "Size", "values": ["S", "M", "L", "XL", "2XL", "3XL"]},
+      {"name": "Color", "values": ["{{color_1}}", "{{color_2}}", "{{color_3}}"]}
+    ],
+    "images": [
+      {
+        "src": "{{primary_mockup_url}}",
+        "alt": "{{alt_text_primary}}",
+        "position": 1
+      },
+      {
+        "src": "{{secondary_mockup_url}}",
+        "alt": "{{alt_text_secondary}}",
+        "position": 2
+      }
+    ],
+    "metafields": [
+      {"namespace": "teejano", "key": "drop_week", "value": "{{week}}", "type": "single_line_text_field"},
+      {"namespace": "teejano", "key": "concept_id", "value": "{{concept_id}}", "type": "single_line_text_field"},
+      {"namespace": "teejano", "key": "variant_label", "value": "{{variant_label}}", "type": "single_line_text_field"},
+      {"namespace": "teejano", "key": "humor_angle", "value": "{{humor_angle}}", "type": "single_line_text_field"},
+      {"namespace": "teejano", "key": "colorways", "value": "{{colorways_json}}", "type": "json"}
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+[2025-W10] [INFO] Starting weekly drop run — week: 2025-W10, mode: draft
+[2025-W10] [INFO] Phase 1: Generating cowork prompts
+[2025-W10] [INFO] Cowork prompts written to drops/2025-W10/COWORK
+[2025-W10] [INFO] Phase 2: Parsing cowork outputs, scoring, selecting finalists
+[2025-W10] [INFO] Parsed 10 valid concepts from chatgpt
+[2025-W10] [INFO] Parsed 5 valid concepts from gemini
+[2025-W10] [INFO] Parsed 3 valid concepts from design_arena
+[2025-W10] [INFO] Total candidates: 18 | Rejected: 6 | Finalists: 12
+[2025-W10] [INFO] Phase 3: Generating design briefs
+[2025-W10] [INFO] Design briefs generated: 24
+[2025-W10] [INFO] Phase 4: Generating Shopify listings
+[2025-W10] [INFO] Listings generated: 24
+[2025-W10] [INFO] Phase 5: Generating marketing packs
+[2025-W10] [INFO] Email sequence generated: 4 emails
+[2025-W10] [INFO] Marketing pack generated
+[2025-W10] [INFO] Phase 6: Generating mockups
+[2025-W10] [INFO] Mockups generated: 48 (24 front-on-model, 24 flatlay)
+[2025-W10] [INFO] Mode=draft — stopping before publish. Review APPROVAL.md to proceed.

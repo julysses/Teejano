@@ -1,0 +1,62 @@
+[
+  {
+    "CONCEPT_ID": "G001",
+    "PHRASE": "Tejano But Make It Gym",
+    "ANGLE": "gym_cowboy_crossover",
+    "VISUAL_HOOK": "Accordion silhouette morphing into a barbell. Bold condensed display font.",
+    "TARGET": "Gym-going Tejano/Mexican-American Texans, 20-40",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Tejano But Make It Gym", "color_suggestion": "Black shirt, white ink"},
+      {"label": "Variant B", "phrase": "Train Like A Tejano", "color_suggestion": "Athletic Heather, black + red ink"}
+    ],
+    "NOTES": "Merges two worlds that overlap massively in South Texas. Gym crowd + Tejano culture = underserved niche."
+  },
+  {
+    "CONCEPT_ID": "G002",
+    "PHRASE": "Houston We Have Tacos",
+    "ANGLE": "food_bbq",
+    "VISUAL_HOOK": "NASA-inspired typography treatment. Bold technical font. Houston reference.",
+    "TARGET": "Houston locals, taco lovers, 25-45, humor crowd",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Houston We Have Tacos", "color_suggestion": "Black shirt, white ink"},
+      {"label": "Variant B", "phrase": "Houston: Taco Capital", "color_suggestion": "Athletic Heather, black ink"}
+    ],
+    "NOTES": "Classic riff on Houston mission control quote. Broad appeal. Texans will immediately get it."
+  },
+  {
+    "CONCEPT_ID": "G003",
+    "PHRASE": "Vaquero Strong",
+    "ANGLE": "gym_cowboy_crossover",
+    "VISUAL_HOOK": "Bold 2-word badge. Longhorn skull icon above. Western + strength aesthetic.",
+    "TARGET": "Gym crowd, cowboy culture, 20-40 male, South Texas",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Vaquero Strong", "color_suggestion": "Black shirt, gold ink"},
+      {"label": "Variant B", "phrase": "Vaquero Built", "color_suggestion": "Comfort Colors Pepper, cream ink"}
+    ],
+    "NOTES": "Two words. Maximum impact. Merges cowboy heritage with gym culture. Spanish word that everyone knows."
+  },
+  {
+    "CONCEPT_ID": "G004",
+    "PHRASE": "Allergic To Cold Weather",
+    "ANGLE": "weather_geography",
+    "VISUAL_HOOK": "Bold italic typography. Thermometer icon optional. Humor-forward.",
+    "TARGET": "Texas general, 25-45, humor buyers, Northerners will buy to spite-gift",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Allergic To Cold Weather", "color_suggestion": "Black shirt, white ink"},
+      {"label": "Variant B", "phrase": "Built For Texas Heat", "color_suggestion": "Red shirt, white ink"}
+    ],
+    "NOTES": "Relatable to every Texan. High shareability. Will also sell to people in cold states as ironic gift."
+  },
+  {
+    "CONCEPT_ID": "G005",
+    "PHRASE": "Deep Ellum Or Deep Sleep",
+    "ANGLE": "self_deprecating_texas",
+    "VISUAL_HOOK": "Typography only. Two-option format. Dallas neighborhood reference.",
+    "TARGET": "Dallas locals, Deep Ellum crowd, nightlife/music scene, 25-40",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Deep Ellum Or Deep Sleep", "color_suggestion": "Black shirt, white ink"},
+      {"label": "Variant B", "phrase": "Deep Ellum Made Me Do It", "color_suggestion": "Athletic Heather, black ink"}
+    ],
+    "NOTES": "Dallas neighborhood pride. Deep Ellum is Dallas's arts/music district with strong local identity."
+  }
+]

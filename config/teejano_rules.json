@@ -1,0 +1,84 @@
+{
+  "brand": {
+    "name": "Teejano",
+    "tagline": "Texas-proud. Bold. Real.",
+    "voice": "confident, funny, Texas-proud, light Spanglish allowed but never forced, witty, never cringe",
+    "target_ages": [20, 50],
+    "origin": "Texas & Tejano cultural identity"
+  },
+  "design_principles": {
+    "phrase_length": {
+      "preferred_words": [2, 6],
+      "max_words": 8,
+      "style": "short punchy phrases — readable from 10 feet away"
+    },
+    "typography": {
+      "style": ["bold sans", "western slab", "condensed display"],
+      "no_script_fonts": true,
+      "hierarchy": "dominant headline with minimal supporting text"
+    },
+    "colors": {
+      "default_spot_colors": [1, 4],
+      "no_gradients_default": true,
+      "preferred_palettes": [
+        {"name": "Texas Night", "hex": ["#1A1A1A", "#C8102E", "#FFFFFF"]},
+        {"name": "Lone Star Gold", "hex": ["#1A1A1A", "#BFA14A", "#FFFFFF"]},
+        {"name": "Desert Dust", "hex": ["#E8D5B7", "#5C3D1E", "#FFFFFF"]},
+        {"name": "Big Sky Blue", "hex": ["#003087", "#FFFFFF", "#C8102E"]},
+        {"name": "Sage & Stone", "hex": ["#6B7C5C", "#F5F0E8", "#2C2416"]}
+      ]
+    },
+    "layout": {
+      "allowed_placements": ["front_center", "pocket_left", "full_back", "chest_center", "sleeve"],
+      "default_placement": "front_center",
+      "no_clutter": true,
+      "print_friendly": true,
+      "min_stroke_width_pt": 1.5
+    },
+    "blanks": {
+      "primary": "Bella+Canvas 3001",
+      "secondary": "Comfort Colors 1717",
+      "default_sizes": ["S", "M", "L", "XL", "2XL", "3XL"]
+    }
+  },
+  "categories": [
+    "texas_cities",
+    "sports_tailgating",
+    "gym_bjj_cowboy_strength",
+    "lifestyle",
+    "music",
+    "pets",
+    "general_texas_humor"
+  ],
+  "default_category_focus": "general_texas_humor",
+  "prohibited": {
+    "copyright": true,
+    "trademark": true,
+    "team_logos": true,
+    "team_names": true,
+    "celebrity_likeness": true,
+    "brand_names": true,
+    "trademarked_slogans": true,
+    "banned_examples": [
+      "YETI", "H-E-B", "Dallas Cowboys", "Spurs", "Astros",
+      "George Strait", "Selena", "Whataburger"
+    ]
+  },
+  "bilingual_rules": {
+    "allowed": true,
+    "level": "light",
+    "note": "One Spanglish word or phrase per design max; must feel natural, not forced"
+  },
+  "cadence": {
+    "drop_type": "weekly_curated",
+    "designs_per_drop": [8, 12],
+    "variants_per_design": 2,
+    "timezone": "America/Chicago"
+  },
+  "pricing_defaults": {
+    "tee_retail": 29.99,
+    "heavyweight_tee_retail": 34.99,
+    "hoodie_retail": 54.99,
+    "compare_at_multiplier": 1.25
+  }
+}

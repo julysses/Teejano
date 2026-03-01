@@ -1,0 +1,29 @@
+{
+  "_comment": "Do NOT hardcode secrets here. Use environment variables. See docs/API_KEYS.md",
+  "shop_domain": "${SHOPIFY_SHOP_DOMAIN}",
+  "admin_access_token": "${SHOPIFY_ADMIN_ACCESS_TOKEN}",
+  "api_version": "${SHOPIFY_API_VERSION:-2024-10}",
+  "default_vendor": "Teejano",
+  "default_product_type": "T-Shirt",
+  "draft_mode": true,
+  "draft_prefix": "[DRAFT]",
+  "autopublish_mode": false,
+  "collections": {
+    "general_texas_humor": "General Texas Humor",
+    "weekly_drops": "Weekly Drops",
+    "best_sellers": "Best Sellers",
+    "new_arrivals": "New Arrivals"
+  },
+  "metafield_namespace": "teejano",
+  "required_metafields": ["drop_week", "concept_id", "variant_label", "colorways", "humor_angle"],
+  "image_upload": {
+    "max_images_per_product": 8,
+    "required_alt_text": true,
+    "primary_image_position": 1
+  },
+  "rate_limits": {
+    "requests_per_second": 2,
+    "retry_on_429": true,
+    "max_retries": 4
+  }
+}

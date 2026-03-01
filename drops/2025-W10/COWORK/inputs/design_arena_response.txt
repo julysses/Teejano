@@ -1,0 +1,38 @@
+[
+  {
+    "CONCEPT_ID": "D001",
+    "PHRASE": "Lone Star. No Notes.",
+    "ANGLE": "texas_pride_deadpan",
+    "VISUAL_HOOK": "Single lone star icon above centered bold condensed text. 1-color. Minimalist.",
+    "TARGET": "Texas general, 20-50, confidence buyers",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Lone Star. No Notes.", "color_suggestion": "Black shirt, white ink 1-color"},
+      {"label": "Variant B", "phrase": "Texas. No Notes.", "color_suggestion": "Comfort Colors Pepper, cream ink 1-color"}
+    ],
+    "NOTES": "Typography-first. The star is a simple 5-point star — not trademarked. 1-color = cheapest screen print. Margin play."
+  },
+  {
+    "CONCEPT_ID": "D002",
+    "PHRASE": "Armadillo Speed. Texas Will.",
+    "ANGLE": "self_deprecating_texas",
+    "VISUAL_HOOK": "Armadillo silhouette running with motion lines. Bold serif headline above.",
+    "TARGET": "Texas humor crowd, 25-45, animal lovers, irony buyers",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Armadillo Speed. Texas Will.", "color_suggestion": "Ivory shirt, dark brown + rust 2-color"},
+      {"label": "Variant B", "phrase": "Slow But Texan", "color_suggestion": "Tan shirt, black ink 1-color"}
+    ],
+    "NOTES": "Texas animal (armadillo) with humor angle. Variant B is the sleeper hit — 3 words, massive wearability."
+  },
+  {
+    "CONCEPT_ID": "D003",
+    "PHRASE": "Rodeo Ready",
+    "ANGLE": "gym_cowboy_crossover",
+    "VISUAL_HOOK": "Bold 2-word badge treatment. Rope border circle. Western serif font. Bull skull optional.",
+    "TARGET": "Rodeo crowd, gym/cowboy crossover, 25-45",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Rodeo Ready", "color_suggestion": "Black shirt, gold + white 2-color"},
+      {"label": "Variant B", "phrase": "Always Rodeo Ready", "color_suggestion": "Comfort Colors Crimson, white ink 1-color"}
+    ],
+    "NOTES": "Seasonal + evergreen. Works for rodeo season and gym culture year-round. Badge format is premium."
+  }
+]

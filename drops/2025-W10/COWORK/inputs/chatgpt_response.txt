@@ -1,0 +1,122 @@
+[
+  {
+    "CONCEPT_ID": "C001",
+    "PHRASE": "Runs On Brisket",
+    "ANGLE": "food_bbq",
+    "VISUAL_HOOK": "Simple bold typography only — condensed block layout. No illustration needed.",
+    "TARGET": "Texas BBQ enthusiasts, gym crowd, 25-45 male/female",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Runs On Brisket", "color_suggestion": "Black shirt, white ink"},
+      {"label": "Variant B", "phrase": "Powered By Brisket", "color_suggestion": "Comfort Colors Pepper, cream ink"}
+    ],
+    "NOTES": "Instant classic. Hits gym culture + Texas BBQ in 3 words. Works on anyone who trains AND eats."
+  },
+  {
+    "CONCEPT_ID": "C002",
+    "PHRASE": "Built Different. Born Here.",
+    "ANGLE": "texas_pride_deadpan",
+    "VISUAL_HOOK": "Stacked two-line heavy condensed sans. Texas state outline subtle watermark behind text.",
+    "TARGET": "Texas-born 20-45, gym crowd, blue collar",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Built Different. Born Here.", "color_suggestion": "Black shirt, white ink"},
+      {"label": "Variant B", "phrase": "Born Here. Built Different.", "color_suggestion": "Athletic Heather, black ink"}
+    ],
+    "NOTES": "Plays on gym culture phrase but anchors it to Texas origin. Broad appeal."
+  },
+  {
+    "CONCEPT_ID": "C003",
+    "PHRASE": "Big Bend Or Bust",
+    "ANGLE": "weather_geography",
+    "VISUAL_HOOK": "Mountain silhouette of Big Bend range in minimal 2-color treatment below text.",
+    "TARGET": "Texas outdoor/adventure crowd, 25-45, travelers",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Big Bend Or Bust", "color_suggestion": "Washed Moss, cream ink"},
+      {"label": "Variant B", "phrase": "Big Bend Bound", "color_suggestion": "Comfort Colors Ivory, dark brown ink"}
+    ],
+    "NOTES": "Geographic specific — Big Bend is a pilgrimage for Texans. High regional pride."
+  },
+  {
+    "CONCEPT_ID": "C004",
+    "PHRASE": "Sí Se Puede Brisket",
+    "ANGLE": "tejano_cultural",
+    "VISUAL_HOOK": "Typography only. Three words stacked. Tight condensed serif.",
+    "TARGET": "Tejano/Mexican-American Texans, BBQ crowd, bilingual 25-45",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Sí Se Puede Brisket", "color_suggestion": "Black shirt, white + red ink (2-color)"},
+      {"label": "Variant B", "phrase": "Sí Se Puede. Brisket.", "color_suggestion": "Comfort Colors Butter, black ink"}
+    ],
+    "NOTES": "Combines Tejano cultural phrase with Texas BBQ. Funny AND culturally resonant. Two audiences in one."
+  },
+  {
+    "CONCEPT_ID": "C005",
+    "PHRASE": "Not From Here. Trying Though.",
+    "ANGLE": "outsider_vs_texan",
+    "VISUAL_HOOK": "Single line condensed. Slightly self-deprecating. Clean typography.",
+    "TARGET": "Texas transplants, 25-40, humor buyers",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Not From Here. Trying Though.", "color_suggestion": "Black shirt, white ink"},
+      {"label": "Variant B", "phrase": "Working On My Texas.", "color_suggestion": "Athletic Heather, black ink"}
+    ],
+    "NOTES": "Texas has millions of transplants. This shirt is a conversation piece. They WANT to wear this."
+  },
+  {
+    "CONCEPT_ID": "C006",
+    "PHRASE": "Weathered In Texas",
+    "ANGLE": "weather_geography",
+    "VISUAL_HOOK": "Badge-style circular lockup. Sun rays. Bold serif. Distressed texture overlay.",
+    "TARGET": "Texas general, 25-50, lifestyle buyers",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Weathered In Texas", "color_suggestion": "Comfort Colors Pepper, cream ink"},
+      {"label": "Variant B", "phrase": "Forged In Texas Heat", "color_suggestion": "Tan shirt, brown ink"}
+    ],
+    "NOTES": "References the legendary Texas weather. Badge format elevates it beyond slogan territory."
+  },
+  {
+    "CONCEPT_ID": "C007",
+    "PHRASE": "South Austin Is Still Austin",
+    "ANGLE": "self_deprecating_texas",
+    "VISUAL_HOOK": "Typography only. Two-line stacked. Clean bold sans.",
+    "TARGET": "Austin residents, 25-40, neighborhood pride",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "South Austin Is Still Austin", "color_suggestion": "Black shirt, white ink"},
+      {"label": "Variant B", "phrase": "South Austin Forever", "color_suggestion": "Athletic Heather, black ink"}
+    ],
+    "NOTES": "Austin neighborhood micro-pride. South Austin crowd is large and opinionated. Strong local identity."
+  },
+  {
+    "CONCEPT_ID": "C008",
+    "PHRASE": "Rolling Coal, Rolling Deep",
+    "ANGLE": "self_deprecating_texas",
+    "VISUAL_HOOK": "Truck silhouette with exhaust plume. Bold condensed sans stacked above.",
+    "TARGET": "Texas truck culture, rural/suburban, 25-45 male",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "Rolling Coal, Rolling Deep", "color_suggestion": "Black shirt, white ink"},
+      {"label": "Variant B", "phrase": "Diesel Is A Love Language", "color_suggestion": "Comfort Colors Pepper, cream ink"}
+    ],
+    "NOTES": "Texas truck culture is massive. The Variant B is the real winner here — funnier and broader appeal."
+  },
+  {
+    "CONCEPT_ID": "C009",
+    "PHRASE": "El Paso Is Closer To California",
+    "ANGLE": "outsider_vs_texan",
+    "VISUAL_HOOK": "Texas map outline with El Paso marked at far left. Geographic humor.",
+    "TARGET": "Texas geography nerds, El Paso locals, humor buyers",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "El Paso Is Closer To California", "color_suggestion": "White shirt, black ink"},
+      {"label": "Variant B", "phrase": "El Paso: Still Texas Though", "color_suggestion": "Black shirt, white ink"}
+    ],
+    "NOTES": "El Paso geography joke is 100% Texas insider knowledge. Viral potential. People will tag El Paso friends."
+  },
+  {
+    "CONCEPT_ID": "C010",
+    "PHRASE": "No Mas Mondays",
+    "ANGLE": "tejano_cultural",
+    "VISUAL_HOOK": "Simple bold type. Light Spanglish. Badge or single-line treatment.",
+    "TARGET": "Working Texans, Tejano culture, 25-45 bilingual",
+    "VARIANTS": [
+      {"label": "Variant A", "phrase": "No Mas Mondays", "color_suggestion": "Black shirt, white ink"},
+      {"label": "Variant B", "phrase": "Lunes? No Gracias.", "color_suggestion": "Comfort Colors Butter, dark ink"}
+    ],
+    "NOTES": "Bilingual humor with universal appeal. Monday hate + Spanglish = broad audience. Light and wearable."
+  }
+]

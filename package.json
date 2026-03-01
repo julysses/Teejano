@@ -1,0 +1,23 @@
+{
+  "name": "teejano-agency",
+  "version": "2.0.0",
+  "description": "Teejano Autonomous Merch Agency — V2 AI-powered creative pipeline",
+  "main": "scripts/run_weekly_drop.ts",
+  "scripts": {
+    "drop": "ts-node scripts/run_weekly_drop.ts",
+    "drop:draft": "ts-node scripts/run_weekly_drop.ts --mode draft",
+    "drop:publish": "ts-node scripts/run_weekly_drop.ts --mode publish",
+    "postmortem": "ts-node scripts/run_weekly_drop.ts --postmortem",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "@types/node": "^20.11.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

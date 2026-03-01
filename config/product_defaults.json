@@ -1,0 +1,70 @@
+{
+  "blanks": {
+    "bella_canvas_3001": {
+      "name": "Bella+Canvas 3001 Unisex Jersey Tee",
+      "type": "tee",
+      "provider": "printify",
+      "sizes": ["S", "M", "L", "XL", "2XL", "3XL"],
+      "available_colors": [
+        {"name": "Black", "hex": "#000000"},
+        {"name": "White", "hex": "#FFFFFF"},
+        {"name": "Dark Grey Heather", "hex": "#4A4A4A"},
+        {"name": "Athletic Heather", "hex": "#B8B8B8"},
+        {"name": "Navy", "hex": "#001F5B"},
+        {"name": "Red", "hex": "#CC0000"},
+        {"name": "Forest", "hex": "#2D5016"},
+        {"name": "Tan", "hex": "#C4A882"}
+      ],
+      "default_colors": ["Black", "White", "Athletic Heather"],
+      "base_cost_estimate": 9.00,
+      "default_retail_price": 29.99,
+      "compare_at_price": 36.99
+    },
+    "comfort_colors_1717": {
+      "name": "Comfort Colors 1717 Heavyweight Tee",
+      "type": "heavyweight_tee",
+      "provider": "printify",
+      "sizes": ["S", "M", "L", "XL", "2XL", "3XL"],
+      "available_colors": [
+        {"name": "Pepper", "hex": "#3A3A3A"},
+        {"name": "Ivory", "hex": "#F5F0E8"},
+        {"name": "Butter", "hex": "#E8D98C"},
+        {"name": "Chambray", "hex": "#6B8FA8"},
+        {"name": "Crimson", "hex": "#9B1B30"},
+        {"name": "Washed Moss", "hex": "#6B7C5C"},
+        {"name": "Blue Jean", "hex": "#4A6FA5"}
+      ],
+      "default_colors": ["Pepper", "Ivory", "Butter"],
+      "base_cost_estimate": 12.00,
+      "default_retail_price": 34.99,
+      "compare_at_price": 42.99
+    }
+  },
+  "print_area": {
+    "front_center": {
+      "width_inches": 12,
+      "height_inches": 14,
+      "placement_y_from_collar_inches": 3
+    },
+    "pocket_left": {
+      "width_inches": 4,
+      "height_inches": 4,
+      "placement_y_from_collar_inches": 5
+    },
+    "full_back": {
+      "width_inches": 12,
+      "height_inches": 16,
+      "placement_y_from_collar_inches": 2
+    },
+    "chest_center": {
+      "width_inches": 5,
+      "height_inches": 5,
+      "placement_y_from_collar_inches": 3.5
+    }
+  },
+  "collections": {
+    "default": ["General Texas Humor", "Weekly Drops"],
+    "bestsellers_threshold_units": 20,
+    "seasonal": ["Holiday Texas", "Rodeo Season", "Football Season", "State Fair"]
+  }
+}

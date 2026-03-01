@@ -1,0 +1,89 @@
+{
+  "version": "2.0",
+  "total_max_score": 100,
+  "dimensions": {
+    "clarity": {
+      "weight": 20,
+      "description": "Is the phrase instantly readable and understood? No ambiguity.",
+      "rubric": {
+        "18-20": "Crystal clear — anyone gets it in under 2 seconds",
+        "14-17": "Clear with minor interpretation needed",
+        "10-13": "Requires knowing the context",
+        "5-9": "Confusing or vague",
+        "0-4": "Incomprehensible"
+      }
+    },
+    "texas_ness": {
+      "weight": 20,
+      "description": "Does it feel genuinely Texas? Not generic Americana — specifically Texas.",
+      "rubric": {
+        "18-20": "Unmistakably Texas — locals will immediately claim it",
+        "14-17": "Strong Texas feel",
+        "10-13": "Some Texas flavor but could be anywhere",
+        "5-9": "Barely Texas",
+        "0-4": "Could be from any state"
+      }
+    },
+    "humor_punch": {
+      "weight": 20,
+      "description": "Does it make someone smirk, chuckle, or nod? Edge without offense.",
+      "rubric": {
+        "18-20": "Genuinely funny — will make someone show their friend",
+        "14-17": "Clever / witty",
+        "10-13": "Mildly amusing",
+        "5-9": "Forced or flat",
+        "0-4": "Not funny at all or offensive"
+      }
+    },
+    "wearability": {
+      "weight": 20,
+      "description": "Would real people actually wear this in public? Not just buy it.",
+      "rubric": {
+        "18-20": "Instant conversation starter — highly wearable",
+        "14-17": "Very wearable for the target audience",
+        "10-13": "Niche wearability",
+        "5-9": "Most people would hesitate",
+        "0-4": "Unwearable or embarrassing"
+      }
+    },
+    "print_simplicity": {
+      "weight": 20,
+      "description": "Can this be screen-printed in 1–4 spot colors with clean lines?",
+      "rubric": {
+        "18-20": "Born for screen print — bold, minimal, iconic",
+        "14-17": "Clean enough for 2-3 color screen print",
+        "10-13": "Needs some simplification",
+        "5-9": "Complex — requires DTG",
+        "0-4": "Impossible to print simply"
+      }
+    }
+  },
+  "thresholds": {
+    "auto_approve": 85,
+    "review_required": 65,
+    "auto_reject": 50
+  },
+  "diversity_rules": {
+    "min_humor_angles": 4,
+    "max_same_angle": 3,
+    "humor_angles": [
+      "self_deprecating_texas",
+      "outsider_vs_texan",
+      "texas_pride_deadpan",
+      "gym_cowboy_crossover",
+      "tejano_cultural",
+      "weather_geography",
+      "food_bbq",
+      "sports_generic"
+    ]
+  },
+  "hard_disqualifiers": [
+    "copyright_violation",
+    "trademark_violation",
+    "celebrity_name",
+    "team_name",
+    "offensive_without_redemption",
+    "phrase_too_long",
+    "generic_american_not_texas"
+  ]
+}

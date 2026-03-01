@@ -1,0 +1,1 @@
+Teejano: {{hook}} {{product_url}}?{{utm_params}} Reply STOP to opt out.

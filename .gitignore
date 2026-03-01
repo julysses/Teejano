@@ -1,0 +1,23 @@
+# Environment & secrets
+.env
+.env.local
+*.env
+
+# Node
+node_modules/
+dist/
+*.js.map
+
+# Drop outputs (large binary assets)
+drops/*/ASSETS/MOCKUPS/**/*.png
+drops/*/ASSETS/DESIGNS/**/*.png
+assets/mockups/blanks/*.png
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp

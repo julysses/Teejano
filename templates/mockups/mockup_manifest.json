@@ -1,0 +1,20 @@
+{
+  "_template": "Mockup Manifest v2",
+  "week": "{{week}}",
+  "generated_at": "{{timestamp}}",
+  "mockups": [
+    {
+      "concept_id": "{{concept_id}}",
+      "design_slug": "{{design_slug}}",
+      "variant_label": "{{variant_label}}",
+      "mockup_type": "front_on_model",
+      "blank": "{{blank_name}}",
+      "color": "{{garment_color}}",
+      "file_path": "{{file_path}}",
+      "export_size": "2000x2000",
+      "status": "generated",
+      "shopify_image_id": null,
+      "shopify_image_url": null
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{{hook_line}}
+
+{{body_line_1}}
+{{body_line_2}}
+
+{{cta}}
+
+—
+
+{{hashtags}}

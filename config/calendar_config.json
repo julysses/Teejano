@@ -1,0 +1,29 @@
+{
+  "timezone": "America/Chicago",
+  "cadence": "weekly",
+  "drop_day": "Friday",
+  "weekly_schedule": {
+    "Monday": ["run_ideation", "cowork_prompt_generation"],
+    "Tuesday": ["parse_cowork_outputs", "scoring", "select_finalists"],
+    "Wednesday": ["design_briefs", "listing_generation", "email_teaser_schedule"],
+    "Thursday": ["mockup_generation", "shopify_staging", "marketing_pack"],
+    "Friday": ["publish_drop", "email_drop_live", "sms_drop_live"],
+    "Saturday": ["monitor_performance"],
+    "Sunday": ["email_last_call", "sms_last_call"],
+    "Tuesday_post": ["analytics_ingest", "postmortem", "feedback_loop_update"]
+  },
+  "seasonal_events": {
+    "Houston Rodeo": {"month": 3, "week": 1, "category": "lifestyle", "boost": true},
+    "Texas State Fair": {"month": 10, "week": 1, "category": "lifestyle", "boost": true},
+    "Football Season Start": {"month": 9, "week": 1, "category": "sports_tailgating", "boost": true},
+    "Super Bowl": {"month": 2, "week": 1, "category": "sports_tailgating", "boost": true},
+    "Cinco de Mayo": {"month": 5, "week": 1, "category": "general_texas_humor", "boost": true},
+    "July 4th": {"month": 7, "week": 1, "category": "general_texas_humor", "boost": true},
+    "Christmas": {"month": 12, "week": 2, "category": "general_texas_humor", "boost": true}
+  },
+  "human_review_gate": {
+    "enabled": true,
+    "approval_file": "APPROVAL.md",
+    "approval_flag": "APPROVED=true"
+  }
+}

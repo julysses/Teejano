@@ -1,0 +1,96 @@
+{
+  "adapter": "local_composite",
+  "canva_api_key": "${CANVA_API_KEY}",
+  "export_size": {
+    "width": 2000,
+    "height": 2000
+  },
+  "templates": {
+    "bc3001_front_black": {
+      "id": "bc3001_front_black",
+      "blank_image_path": "assets/mockups/blanks/bc3001_black_front.png",
+      "product_type": "tee",
+      "color": "Black",
+      "view": "front",
+      "print_zone": {
+        "x": 680,
+        "y": 520,
+        "width": 640,
+        "height": 750
+      },
+      "warp_mode": "none",
+      "shadow_overlay": null,
+      "highlight_overlay": null
+    },
+    "bc3001_front_white": {
+      "id": "bc3001_front_white",
+      "blank_image_path": "assets/mockups/blanks/bc3001_white_front.png",
+      "product_type": "tee",
+      "color": "White",
+      "view": "front",
+      "print_zone": {
+        "x": 680,
+        "y": 520,
+        "width": 640,
+        "height": 750
+      },
+      "warp_mode": "none",
+      "shadow_overlay": null,
+      "highlight_overlay": null
+    },
+    "cc1717_front_pepper": {
+      "id": "cc1717_front_pepper",
+      "blank_image_path": "assets/mockups/blanks/cc1717_pepper_front.png",
+      "product_type": "heavyweight_tee",
+      "color": "Pepper",
+      "view": "front",
+      "print_zone": {
+        "x": 690,
+        "y": 530,
+        "width": 620,
+        "height": 730
+      },
+      "warp_mode": "none",
+      "shadow_overlay": null,
+      "highlight_overlay": null
+    },
+    "cc1717_front_ivory": {
+      "id": "cc1717_front_ivory",
+      "blank_image_path": "assets/mockups/blanks/cc1717_ivory_front.png",
+      "product_type": "heavyweight_tee",
+      "color": "Ivory",
+      "view": "front",
+      "print_zone": {
+        "x": 690,
+        "y": 530,
+        "width": 620,
+        "height": 730
+      },
+      "warp_mode": "none",
+      "shadow_overlay": null,
+      "highlight_overlay": null
+    },
+    "flatlay_black": {
+      "id": "flatlay_black",
+      "blank_image_path": "assets/mockups/blanks/flatlay_black.png",
+      "product_type": "tee",
+      "color": "Black",
+      "view": "flatlay",
+      "print_zone": {
+        "x": 660,
+        "y": 480,
+        "width": 680,
+        "height": 800
+      },
+      "warp_mode": "none",
+      "shadow_overlay": null,
+      "highlight_overlay": null
+    }
+  },
+  "per_design_variants": [
+    "front_on_model",
+    "flatlay"
+  ],
+  "output_path_template": "drops/{week}/ASSETS/MOCKUPS/{design_slug}/{variant}/",
+  "filename_template": "{week}_{concept_id}_{slug}_{variant}_{color}.png"
+}

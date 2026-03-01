@@ -1,0 +1,32 @@
+# Teejano Blacklist — Banned Phrases & Patterns
+# Format: one entry per line. # = comment. Entries are case-insensitive substring matches.
+# Auto-populated by feedback loop agent when phrases repeatedly underperform.
+# Also manually curated by Brand Guardian.
+
+# === TRADEMARK / COPYRIGHT RISKS ===
+yeti
+whataburger
+h-e-b
+buc-ee's
+lone star beer
+dallas cowboys
+houston texans
+san antonio spurs
+texas rangers
+houston astros
+selena quintanilla
+george strait
+# Generic protected phrases
+don't mess with texas
+
+# === GENERIC / OVERUSED ===
+everything's bigger in texas
+texas forever
+lone star state
+y'all
+texas strong
+born in texas
+# Too generic Americana
+freedom
+patriot
+1776
