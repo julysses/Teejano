@@ -24,7 +24,8 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 app.use("/api", apiRouter);
 
 // Fallback: serve index.html for any unmatched route (SPA)
-app.get("*", (_req, res) => {
+// Express 5 requires explicit wildcard syntax
+app.get(/.*/, (_req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
 
