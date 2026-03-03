@@ -288,6 +288,48 @@
   </section>
 </main>
 
+<!-- EDIT CONCEPT MODAL -->
+<div class="modal-overlay" id="edit-modal" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Design</span>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <input type="hidden" id="edit-concept-id">
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Phrase</label>
+        <input type="text" id="edit-phrase" class="form-input" placeholder="Main phrase...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sell Thesis</label>
+        <textarea id="edit-sell-thesis" class="form-textarea" rows="2" placeholder="Why this sells..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Audience</label>
+        <input type="text" id="edit-audience" class="form-input" placeholder="Who buys this...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Art / Icon Notes</label>
+        <textarea id="edit-notes" class="form-textarea" rows="2" placeholder="Visual direction, icons, imagery..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveConceptEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- MOCKUP LIGHTBOX MODAL -->
+<div class="modal-overlay modal-overlay--dark" id="mockup-modal" onclick="closeMockupModal()">
+  <div class="mockup-lightbox">
+    <div class="mockup-lightbox-label" id="mockup-modal-label"></div>
+    <img id="mockup-modal-img" src="" alt="Mockup">
+    <button class="mockup-lightbox-close" onclick="closeMockupModal()">✕ Close</button>
+  </div>
+</div>
+
 <!-- TOAST NOTIFICATION -->
 <div id="toast" class="toast"></div>
 

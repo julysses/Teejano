@@ -402,9 +402,16 @@ async function loadFinalistsPage() {
   container.innerHTML = '<div class="table-loading"><span class="spinner"></span> Loading...</div>';
 
   try {
-    const res = await fetch(`${API}/api/drops/${week}`);
-    const data = await res.json();
+    const [dropRes, briefsRes] = await Promise.all([
+      fetch(`${API}/api/drops/${week}`),
+      fetch(`${API}/api/drops/${week}/briefs`),
+    ]);
+    const data = await dropRes.json();
+    const briefsData = briefsRes.ok ? await briefsRes.json() : { briefs: [], mockups: [] };
+
     state.activeDropData = data;
+    state.briefs = briefsData.briefs ?? [];
+    state.mockups = briefsData.mockups ?? [];
 
     const finalists = data.finalists ?? [];
     state.approvalState = data.approved;
@@ -416,14 +423,20 @@ async function loadFinalistsPage() {
           <button class="btn btn-primary btn-sm" onclick="runScoring()">Run Scoring Now</button>
         </div>`;
     } else {
+      const approvedCount = finalists.filter(f => f.concept_approved).length;
       container.innerHTML = `
-        <div style="margin-bottom:12px;display:flex;gap:12px;align-items:center">
-          <span class="text-muted" style="font-size:12px">${finalists.length} finalists · ${data.listing_count ?? 0} listings</span>
-          ${data.listing_count ? '' : '<button class="btn btn-secondary btn-sm" onclick="runBriefs()">Generate Briefs & Listings</button>'}
-          ${data.listing_count ? '<button class="btn btn-danger btn-sm" onclick="publishDrop()">Publish to Shopify →</button>' : ''}
+        <div class="finalists-toolbar">
+          <span class="text-muted" style="font-size:12px">
+            ${finalists.length} designs · ${approvedCount} approved
+            ${data.listing_count ? ` · ${data.listing_count} listings` : ''}
+          </span>
+          <div style="display:flex;gap:8px">
+            ${data.listing_count ? '' : '<button class="btn btn-secondary btn-sm" onclick="runBriefs()">Generate Briefs & Mockups</button>'}
+            ${data.listing_count ? '<button class="btn btn-danger btn-sm" onclick="publishDrop()">Publish to Shopify →</button>' : ''}
+          </div>
         </div>
         <div class="finalist-grid">
-          ${finalists.map((c, i) => renderFinalistCard(c, i)).join('')}
+          ${finalists.map((c, i) => renderFinalistCard(c, i, state.briefs, state.mockups)).join('')}
         </div>
       `;
     }
@@ -454,43 +467,153 @@ async function loadFinalistsPage() {
   }
 }
 
-function renderFinalistCard(c, i) {
+function renderFinalistCard(c, i, briefs, mockups) {
   const score = c.total_score ?? 0;
   const fillClass = score >= 80 ? 'high' : score >= 65 ? 'mid' : '';
   const scores = c.scores ?? {};
+  const isApproved = !!c.concept_approved;
+
+  // Find briefs for this concept (VA + VB)
+  const conceptBriefs = (briefs ?? []).filter(b => b.concept_id === c.concept_id);
+
+  // Find mockup images for this concept (prefer front_on_model)
+  const conceptMockups = (mockups ?? []).filter(m => m.concept_id === c.concept_id);
+  const primaryMockup = conceptMockups.find(m => m.mockup_type === 'front_on_model') ?? conceptMockups[0];
 
   return `
-    <div class="finalist-card">
-      <div class="finalist-rank">#${i + 1} · Score: ${score}/100</div>
-      <div class="finalist-phrase">${escHtml(c.phrase_primary)}</div>
-      <div class="finalist-score-bar">
-        <div class="finalist-score-fill ${fillClass}" style="width:${score}%"></div>
-      </div>
-      <div class="finalist-meta">
-        <span class="badge badge-gray">${c.angle ?? '—'}</span>
-        ${c.bilingual_level && c.bilingual_level !== 'none' ? `<span class="badge badge-blue">Spanglish:${c.bilingual_level}</span>` : ''}
-      </div>
-      <div class="finalist-detail">${escHtml(c.audience ?? '')}</div>
-      ${scores.clarity !== undefined ? `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px;color:var(--text-dim);margin-top:4px;">
-          <span>Clarity: ${scores.clarity}/20</span>
-          <span>Texas-ness: ${scores.texas_ness}/20</span>
-          <span>Humor: ${scores.humor_punch}/20</span>
-          <span>Wearability: ${scores.wearability}/20</span>
-          <span>Print: ${scores.print_simplicity}/20</span>
+    <div class="finalist-card ${isApproved ? 'finalist-card--approved' : ''}" id="card-${c.concept_id}">
+      ${primaryMockup?.url ? `
+        <div class="finalist-mockup" onclick="openMockupModal('${escHtml(primaryMockup.url)}', '${escHtml(c.phrase_primary)}')">
+          <img src="${escHtml(primaryMockup.url)}" alt="${escHtml(c.phrase_primary)}" loading="lazy" onerror="this.parentElement.style.display='none'">
+          ${conceptMockups.length > 1 ? `<span class="mockup-count">${conceptMockups.length} views</span>` : ''}
         </div>` : ''}
-      ${c.variants?.length ? `
-        <div class="finalist-variants">
-          ${c.variants.map(v => `
-            <div class="variant-row">
-              <span class="variant-label">${v.label}:</span>
-              <span class="variant-phrase">${escHtml(v.phrase)}</span>
-            </div>
-          `).join('')}
-        </div>` : ''}
-      <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">${escHtml(c.sell_thesis ?? '')}</div>
+
+      <div class="finalist-card-body">
+        <div class="finalist-card-header">
+          <div class="finalist-rank">#${i + 1} · ${score}/100</div>
+          <div class="finalist-card-actions">
+            <button class="btn-icon ${isApproved ? 'btn-icon--active' : ''}" title="${isApproved ? 'Approved — click to revoke' : 'Approve this design'}"
+              onclick="toggleConceptApproval('${c.concept_id}', ${isApproved})">
+              ${isApproved ? '✓' : '○'}
+            </button>
+            <button class="btn-icon" title="Edit this design" onclick="editConcept('${c.concept_id}')">✏</button>
+          </div>
+        </div>
+
+        <div class="finalist-phrase">${escHtml(c.phrase_primary)}</div>
+        <div class="finalist-score-bar">
+          <div class="finalist-score-fill ${fillClass}" style="width:${score}%"></div>
+        </div>
+
+        <div class="finalist-meta">
+          <span class="badge badge-gray">${c.angle ?? '—'}</span>
+          ${c.bilingual_level && c.bilingual_level !== 'none' ? `<span class="badge badge-blue">Spanglish:${c.bilingual_level}</span>` : ''}
+          ${isApproved ? '<span class="badge badge-green">Approved</span>' : ''}
+        </div>
+
+        <div class="finalist-detail">${escHtml(c.audience ?? '')}</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">${escHtml(c.sell_thesis ?? '')}</div>
+
+        ${scores.clarity !== undefined ? `
+          <div class="score-grid">
+            <span>Clarity: ${scores.clarity}/20</span>
+            <span>Texas-ness: ${scores.texas_ness}/20</span>
+            <span>Humor: ${scores.humor_punch}/20</span>
+            <span>Wearability: ${scores.wearability}/20</span>
+            <span>Print: ${scores.print_simplicity}/20</span>
+          </div>` : ''}
+
+        ${conceptBriefs.length ? `
+          <details class="brief-details">
+            <summary>Brief — ${conceptBriefs.length} variant${conceptBriefs.length > 1 ? 's' : ''}</summary>
+            ${conceptBriefs.map(b => `
+              <div class="brief-variant">
+                <div class="brief-variant-label">${escHtml(b.variant_label ?? '')}</div>
+                <div class="brief-row"><span>Layout</span><span>${escHtml(b.layout_map?.layout_type ?? '—')}</span></div>
+                <div class="brief-row"><span>Font</span><span>${escHtml(b.layout_map?.font_primary ?? '—')}</span></div>
+                <div class="brief-row"><span>Garment</span><span>${escHtml(b.colorways?.garment_color ?? '—')}</span></div>
+                <div class="brief-row"><span>Ink colors</span><span>${(b.colorways?.ink_colors ?? []).map(ic => ic.name).join(', ') || '—'}</span></div>
+                <div class="brief-row"><span>Placement</span><span>${escHtml(b.print_specs?.placement ?? '—')} ${b.print_specs ? `· ${b.print_specs.width_inches}"×${b.print_specs.height_inches}"` : ''}</span></div>
+                ${b.icon_notes ? `<div class="brief-row brief-row--full"><span>Icons/Art</span><span>${escHtml(b.icon_notes)}</span></div>` : ''}
+              </div>
+            `).join('')}
+          </details>` : ''}
+      </div>
     </div>
   `;
+}
+
+async function toggleConceptApproval(conceptId, currentlyApproved) {
+  const week = state.activeWeek;
+  if (!week) return;
+  try {
+    const res = await fetch(`${API}/api/drops/${week}/finalists/${conceptId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ concept_approved: !currentlyApproved }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    showToast(!currentlyApproved ? 'Design approved ✓' : 'Approval removed', !currentlyApproved ? 'success' : '');
+    await loadFinalistsPage();
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+}
+
+function editConcept(conceptId) {
+  const concept = (state.activeDropData?.finalists ?? []).find(f => f.concept_id === conceptId);
+  if (!concept) return;
+
+  document.getElementById('edit-concept-id').value = conceptId;
+  document.getElementById('edit-phrase').value = concept.phrase_primary ?? '';
+  document.getElementById('edit-sell-thesis').value = concept.sell_thesis ?? '';
+  document.getElementById('edit-audience').value = concept.audience ?? '';
+  document.getElementById('edit-notes').value = concept.imagery_notes ?? '';
+
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+}
+
+async function saveConceptEdit() {
+  const conceptId = document.getElementById('edit-concept-id').value;
+  const week = state.activeWeek;
+  if (!conceptId || !week) return;
+
+  const payload = {
+    phrase_primary: document.getElementById('edit-phrase').value.trim(),
+    sell_thesis: document.getElementById('edit-sell-thesis').value.trim(),
+    audience: document.getElementById('edit-audience').value.trim(),
+    imagery_notes: document.getElementById('edit-notes').value.trim(),
+  };
+
+  try {
+    const res = await fetch(`${API}/api/drops/${week}/finalists/${conceptId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    showToast('Design updated!', 'success');
+    closeEditModal();
+    await loadFinalistsPage();
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+}
+
+function openMockupModal(url, phrase) {
+  document.getElementById('mockup-modal-img').src = url;
+  document.getElementById('mockup-modal-label').textContent = phrase;
+  document.getElementById('mockup-modal').classList.add('open');
+}
+
+function closeMockupModal() {
+  document.getElementById('mockup-modal').classList.remove('open');
 }
 
 async function toggleApproval() {

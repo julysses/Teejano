@@ -443,6 +443,50 @@ router.post("/drops/:week/approve", (req, res) => {
 // DATA / FILES
 // ─────────────────────────────────────────────
 
+/** GET /api/drops/:week/briefs — return design briefs + mockup URLs */
+router.get("/drops/:week/briefs", (req, res) => {
+  const { week } = req.params;
+  const briefsPath = path.join(process.cwd(), "drops", week, "02_DESIGN_BRIEFS", "_all_briefs.json");
+  const mockupManifestPath = path.join(process.cwd(), "drops", week, "ASSETS", "MOCKUPS", "mockup_manifest.json");
+
+  const briefs = fileExists(briefsPath) ? readJson<any[]>(briefsPath) : [];
+  const manifest = fileExists(mockupManifestPath) ? readJson<any>(mockupManifestPath) : { mockups: [] };
+
+  // Convert absolute file_path to a web-accessible URL
+  const cwd = process.cwd();
+  const mockups = (manifest.mockups ?? []).map((m: any) => ({
+    ...m,
+    url: m.file_path
+      ? m.file_path.replace(cwd, "").replace(/\\/g, "/")
+      : null,
+  }));
+
+  res.json({ briefs, mockups });
+});
+
+/** PUT /api/drops/:week/finalists/:conceptId — update a finalist concept */
+router.put("/drops/:week/finalists/:conceptId", (req, res) => {
+  const { week, conceptId } = req.params;
+  const dropDir = path.join(process.cwd(), "drops", week);
+  const finalistPath = path.join(dropDir, "01_FINALISTS.md.json");
+  if (!fileExists(finalistPath)) return res.status(404).json({ error: "Finalists not found" });
+
+  const finalists = readJson<ScoredConcept[]>(finalistPath);
+  const idx = finalists.findIndex((f) => f.concept_id === conceptId);
+  if (idx === -1) return res.status(404).json({ error: "Concept not found" });
+
+  const editable = ["phrase_primary", "sell_thesis", "audience", "hook", "imagery_notes", "concept_approved"];
+  for (const key of editable) {
+    if (req.body[key] !== undefined) {
+      (finalists[idx] as any)[key] = req.body[key];
+    }
+  }
+
+  writeJson(finalistPath, finalists);
+  appendLog(dropDir, `Concept ${conceptId} updated via web dashboard`);
+  res.json({ success: true, concept: finalists[idx] });
+});
+
 /** GET /api/drops/:week/log — get run log */
 router.get("/drops/:week/log", (req, res) => {
   const { week } = req.params;
