@@ -22,7 +22,7 @@
   --sidebar-w: 220px;
   --radius: 6px;
   --font: 'Inter', -apple-system, sans-serif;
-  --font-display: 'Oswald', 'Inter', sans-serif;
+  --font-display: 'Bebas Neue', 'Oswald', 'Inter', sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -50,29 +50,34 @@ html, body {
 }
 
 .sidebar-brand {
-  padding: 24px 20px 20px;
+  padding: 22px 20px 18px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
-.brand-logo { font-size: 24px; }
-
-.brand-name {
+.brand-wordmark {
   font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 3px;
+  font-size: 30px;
   color: var(--text);
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.brand-star {
+  color: var(--red);
+  font-size: 22px;
+  vertical-align: middle;
   line-height: 1;
 }
 
 .brand-sub {
-  font-size: 10px;
-  letter-spacing: 4px;
-  color: var(--red);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--text-dim);
   text-transform: uppercase;
+  font-weight: 600;
 }
 
 .nav-links {
@@ -155,9 +160,9 @@ html, body {
 
 .page-header h1 {
   font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 36px;
+  letter-spacing: 2px;
+  line-height: 1;
 }
 
 .page-desc {
@@ -226,10 +231,10 @@ html, body {
 
 .stat-value {
   font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 38px;
   color: var(--text);
   line-height: 1;
+  letter-spacing: 1px;
 }
 
 /* ─── PIPELINE TRACK ─── */
@@ -487,10 +492,10 @@ html, body {
 
 .finalist-phrase {
   font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 24px;
   color: var(--text);
-  line-height: 1.1;
+  line-height: 1;
+  letter-spacing: 1px;
 }
 
 .finalist-score-bar {
@@ -644,6 +649,7 @@ html, body {
   font-family: var(--font-display);
   color: var(--text);
   margin: 16px 0 8px;
+  letter-spacing: 1px;
 }
 
 .analytics-actions {
@@ -960,9 +966,9 @@ html, body {
 
 .modal-title {
   font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 22px;
+  letter-spacing: 2px;
+  line-height: 1;
 }
 
 .modal-close {
@@ -1168,9 +1174,9 @@ html, body {
 
 .holiday-date {
   font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 18px;
   color: var(--text);
+  letter-spacing: 1px;
 }
 
 .holiday-days {
@@ -1274,10 +1280,10 @@ html, body {
 
 .seed-phrase {
   font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 22px;
   color: var(--text);
-  line-height: 1.15;
+  line-height: 1;
+  letter-spacing: 1px;
 }
 
 .seed-angle {
