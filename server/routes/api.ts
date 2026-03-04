@@ -601,6 +601,193 @@ router.get("/data/metrics", (_req, res) => {
   res.json({ metrics });
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// IDEAS — Holiday Calendar + Seed Generator
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface HolidayDef {
+  name: string;
+  date: string;          // YYYY-MM-DD
+  emoji: string;
+  tags: string[];
+  leadWeeks: number;     // recommended pipeline lead time
+  note: string;
+}
+
+const HOLIDAY_DEFS: HolidayDef[] = [
+  { name: "Easter",                date: "2026-04-05", emoji: "🐣", tags: ["spring","family"],            leadWeeks: 6, note: "Spring seasonal drop" },
+  { name: "Fiesta San Antonio",    date: "2026-04-16", emoji: "🎉", tags: ["texas","tejano","cultural"],   leadWeeks: 8, note: "Major SA cultural festival — Tejano angle essential" },
+  { name: "Cinco de Mayo",         date: "2026-05-05", emoji: "🇲🇽", tags: ["tejano","cultural"],         leadWeeks: 6, note: "Core Tejano calendar moment" },
+  { name: "Mother's Day",          date: "2026-05-10", emoji: "💐", tags: ["gifts","family"],             leadWeeks: 6, note: "Gift bundles opportunity" },
+  { name: "Memorial Day",          date: "2026-05-25", emoji: "🇺🇸", tags: ["patriotic","texas"],         leadWeeks: 5, note: "Summer kickoff + patriotic" },
+  { name: "Juneteenth",            date: "2026-06-19", emoji: "✊", tags: ["texas","culture","history"],   leadWeeks: 7, note: "Texas historical significance — thoughtful angle" },
+  { name: "Father's Day",          date: "2026-06-21", emoji: "👨", tags: ["gifts","texas"],              leadWeeks: 6, note: "Texas dad energy — gift season" },
+  { name: "Independence Day",      date: "2026-07-04", emoji: "🎆", tags: ["patriotic","texas","summer"], leadWeeks: 6, note: "Big summer drop — patriotic + Texas pride" },
+  { name: "Back to School",        date: "2026-08-17", emoji: "🎒", tags: ["seasonal","youth"],           leadWeeks: 6, note: "Youth market + campus drops" },
+  { name: "Labor Day",             date: "2026-09-07", emoji: "🔧", tags: ["seasonal"],                   leadWeeks: 5, note: "End-of-summer wind-down" },
+  { name: "Austin City Limits",    date: "2026-10-02", emoji: "🎸", tags: ["texas","music"],              leadWeeks: 8, note: "Music festival — Texas culture peak" },
+  { name: "Halloween",             date: "2026-10-31", emoji: "🎃", tags: ["seasonal","fun"],             leadWeeks: 6, note: "Spooky Texas-themed drop" },
+  { name: "Día de los Muertos",    date: "2026-11-02", emoji: "💀", tags: ["tejano","cultural"],          leadWeeks: 6, note: "Core Tejano cultural moment — always strong" },
+  { name: "Veterans Day",          date: "2026-11-11", emoji: "🎖",  tags: ["patriotic","texas","military"], leadWeeks: 5, note: "Military + Texas pride crossover" },
+  { name: "Thanksgiving",          date: "2026-11-26", emoji: "🦃", tags: ["family","texas"],             leadWeeks: 7, note: "Texas Thanksgiving — biggest gifting week" },
+  { name: "Black Friday Drop",     date: "2026-11-27", emoji: "🛍",  tags: ["shopping","drop"],           leadWeeks: 7, note: "Plan your biggest launch for Black Friday" },
+  { name: "Christmas",             date: "2026-12-25", emoji: "🎄", tags: ["gifts","family"],             leadWeeks: 8, note: "Biggest gift season — all styles should be live" },
+  { name: "New Year's Eve",        date: "2026-12-31", emoji: "🎆", tags: ["celebration"],               leadWeeks: 7, note: "Year-end party drop" },
+  { name: "Super Bowl LXI",        date: "2027-02-07", emoji: "🏈", tags: ["sports","texas","party"],     leadWeeks: 7, note: "Sports + Texas party culture — huge" },
+  { name: "Valentine's Day",       date: "2027-02-14", emoji: "❤️",  tags: ["gifts","romance"],          leadWeeks: 6, note: "Gift sets + couples drop" },
+  { name: "Texas Independence Day",date: "2027-03-02", emoji: "⭐", tags: ["texas","pride","history"],    leadWeeks: 6, note: "Biggest Texas pride moment of the year" },
+  { name: "St. Patrick's Day",     date: "2027-03-17", emoji: "☘️", tags: ["fun","social"],              leadWeeks: 5, note: "Bar-crawl season — fun + irreverent" },
+];
+
+/** GET /api/ideas/holidays — upcoming holidays with pipeline start deadlines */
+router.get("/ideas/holidays", (_req, res) => {
+  const now = new Date();
+
+  const result = HOLIDAY_DEFS
+    .map((h) => {
+      const holidayDate = new Date(h.date);
+      const startDate = new Date(holidayDate.getTime() - h.leadWeeks * 7 * 24 * 60 * 60 * 1000);
+      const urgentDate = new Date(holidayDate.getTime() - 3 * 7 * 24 * 60 * 60 * 1000);
+      const daysUntilHoliday = Math.ceil((holidayDate.getTime() - now.getTime()) / 86400000);
+      const daysUntilStart = Math.ceil((startDate.getTime() - now.getTime()) / 86400000);
+
+      let urgency: "past" | "urgent" | "soon" | "ok" | "future";
+      if (daysUntilHoliday < -7)        urgency = "past";
+      else if (now >= urgentDate)        urgency = "urgent";
+      else if (now >= startDate)         urgency = "soon";
+      else if (daysUntilStart <= 14)     urgency = "ok";
+      else                               urgency = "future";
+
+      return {
+        ...h,
+        startDate: startDate.toISOString().slice(0, 10),
+        daysUntilHoliday,
+        daysUntilStart,
+        urgency,
+      };
+    })
+    .filter((h) => h.daysUntilHoliday > -8)
+    .sort((a, b) => a.daysUntilHoliday - b.daysUntilHoliday);
+
+  res.json({ holidays: result });
+});
+
+interface AngleDef {
+  angle: string;
+  keywords: string[];
+  phrases: string[];
+  audience: string;
+}
+
+const ANGLE_DEFS: AngleDef[] = [
+  {
+    angle: "self_deprecating_texas",
+    keywords: ["heat","hot","sweat","summer","weather","humid","complain","suffer","freeze","cold","flat","boring"],
+    phrases: ["SWEATING LIKE A TEXAN", "TOO HOT TO RODEO", "BORN IN THE HEAT", "WE DON'T TALK ABOUT THE COLD"],
+    audience: "Texans who embrace the state's quirks, 18-35",
+  },
+  {
+    angle: "texas_pride_deadpan",
+    keywords: ["texas","pride","lone star","state","big","best","born","home","flag","cowboy","hat"],
+    phrases: ["TEXAS OR NOWHERE", "BORN BLESSED IN TEXAS", "LONE STAR ENERGY", "BIGGER IN TEXAS OBVIOUSLY"],
+    audience: "Proud Texans who wear the identity boldly",
+  },
+  {
+    angle: "food_bbq",
+    keywords: ["bbq","food","brisket","barbecue","eat","tacos","grill","smoke","pit","brisket","queso","tortilla"],
+    phrases: ["BBQ IS MY LOVE LANGUAGE", "BRISKET WEATHER", "TACOS OVER EVERYTHING", "SMOKE SIGNALS"],
+    audience: "BBQ lovers, foodies, Texas food culture enthusiasts",
+  },
+  {
+    angle: "tejano_cultural",
+    keywords: ["tejano","cultura","heritage","mexican","cinco","dia","muertos","corrido","conjunto","frontera","raza","spanish"],
+    phrases: ["PURO TEJANO", "CULTURA FIRST", "FRONTERA FOREVER", "NI DE AQUÍ NI DE ALLÁ"],
+    audience: "Texas-Mexican community, Tejano music fans, bilingual Texans",
+  },
+  {
+    angle: "gym_cowboy_crossover",
+    keywords: ["gym","workout","fitness","cowboy","boots","rodeo","lift","gains","protein","ranch","strong","build"],
+    phrases: ["SPURS & SQUAT RACKS", "COWBOY BUILT DIFFERENT", "BOOTS IN THE GYM", "RODEO GAINZ"],
+    audience: "Gym-goers who also love Texas culture, 18-30",
+  },
+  {
+    angle: "outsider_vs_texan",
+    keywords: ["california","yankee","outsider","move","transplant","not from","newcomer","relocation","austin"],
+    phrases: ["SORRY YOU'RE NOT FROM HERE", "TEXAN BY CHOICE NOT CHANCE", "Y'ALL AREN'T FROM HERE", "WE SAW YOU MOVE IN"],
+    audience: "Longtime Texans tired of transplants, 25-45",
+  },
+  {
+    angle: "weather_geography",
+    keywords: ["winter","freeze","snow","storm","wind","flat","hill","desert","coast","tornado","thunder","spring"],
+    phrases: ["FOUR SEASONS IN ONE DAY", "WEATHERING IT TEXAS STYLE", "FLAT AND PROUD", "TORNADO SEASON REGULAR"],
+    audience: "Texans who bond over extreme weather and geography",
+  },
+  {
+    angle: "sports_generic",
+    keywords: ["football","baseball","basketball","astros","texans","cowboys","superbowl","sports","game","tailgate","stadium"],
+    phrases: ["GAME DAY STATE OF MIND", "TEXAS SPORTS RELIGION", "SUNDAY FOOTBALL MANDATORY", "TAILGATE ROYALTY"],
+    audience: "Sports fans, game-day shirt buyers, 21-45",
+  },
+];
+
+/** POST /api/ideas/seeds — generate concept seeds from user preferences */
+router.post("/ideas/seeds", (req, res) => {
+  const { preferences = "", holiday = "", holiday_tags = [] } = req.body ?? {};
+  const text = `${preferences} ${(holiday_tags as string[]).join(" ")} ${holiday}`.toLowerCase();
+
+  // Score each angle by keyword overlap
+  const scored = ANGLE_DEFS
+    .map((a) => ({
+      ...a,
+      score: a.keywords.filter((k) => text.includes(k)).length,
+    }))
+    .sort((a, b) => b.score - a.score);
+
+  const seeds: object[] = [];
+
+  // Holiday-pinned seed (if a holiday was selected)
+  if (holiday) {
+    const topAngle = scored[0];
+    seeds.push({
+      phrase: `${holiday.toUpperCase()} TEXAS STYLE`,
+      angle: topAngle?.angle ?? "texas_pride_deadpan",
+      audience: topAngle?.audience ?? "Texas streetwear fans",
+      sell_thesis: `Seasonal drop tied to ${holiday} with a Texas twist`,
+      is_holiday_seed: true,
+    });
+  }
+
+  // Take top 3 matching angles (or top 3 overall if no matches), 2 phrases each
+  const topAngles = scored.filter((_, i) => i < 3);
+  for (const a of topAngles) {
+    for (const phrase of a.phrases.slice(0, 2)) {
+      if (seeds.length >= 8) break;
+      seeds.push({
+        phrase,
+        angle: a.angle,
+        audience: a.audience,
+        sell_thesis: `Plays on Texas identity and ${a.angle.replace(/_/g, " ")} humor`,
+        is_holiday_seed: false,
+      });
+    }
+  }
+
+  // If no preferences matched anything, fall back to all top-of-list phrases
+  if (seeds.length < 4 && !preferences.trim()) {
+    for (const a of ANGLE_DEFS.slice(0, 4)) {
+      seeds.push({
+        phrase: a.phrases[0],
+        angle: a.angle,
+        audience: a.audience,
+        sell_thesis: `Classic ${a.angle.replace(/_/g, " ")} angle`,
+        is_holiday_seed: false,
+      });
+    }
+  }
+
+  res.json({ seeds: seeds.slice(0, 8) });
+});
+
 /** GET /api/health */
 router.get("/health", (_req, res) => {
   res.json({ status: "ok", version: "2.0.0", current_week: getCurrentWeek() });

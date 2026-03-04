@@ -1057,6 +1057,255 @@ html, body {
   font-weight: 600;
 }
 
+/* ─── IDEAS PAGE ─── */
+.ideas-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.urgency-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.urgency-dot.urgency-urgent { background: var(--red); }
+.urgency-dot.urgency-soon   { background: var(--yellow); }
+.urgency-dot.urgency-ok     { background: var(--blue); }
+.urgency-dot.urgency-future { background: var(--surface3); border: 1px solid var(--border2); }
+
+/* Holiday list */
+.holiday-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.holiday-section-label {
+  padding: 8px 20px;
+  background: var(--surface2);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+
+.holiday-section-label--urgent {
+  background: rgba(200, 16, 46, 0.08);
+  color: var(--red);
+}
+
+.holiday-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+  transition: background 0.1s;
+}
+
+.holiday-row:last-child { border-bottom: none; }
+.holiday-row:hover { background: var(--surface2); }
+
+.holiday-row.urgency-urgent { border-left: 3px solid var(--red); }
+.holiday-row.urgency-soon   { border-left: 3px solid var(--yellow); }
+.holiday-row.urgency-ok     { border-left: 3px solid var(--blue); }
+.holiday-row.urgency-future { border-left: 3px solid transparent; }
+
+.holiday-row-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.holiday-emoji { font-size: 22px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+
+.holiday-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+.holiday-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.holiday-note {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.holiday-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.holiday-row-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+  min-width: 180px;
+  text-align: right;
+}
+
+.holiday-date {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.holiday-days {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.holiday-urgency-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.urgency-text-urgent { color: var(--red); }
+.urgency-text-soon   { color: var(--yellow); }
+.urgency-text-ok     { color: var(--blue); }
+.urgency-text-future { color: var(--text-dim); }
+
+.holiday-start-note {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* Seed Generator */
+.seed-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.seed-box-top {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 16px;
+  align-items: start;
+}
+
+.seed-input-wrap, .seed-holiday-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.select-full {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+
+.seed-generate-btn { align-self: flex-start; }
+
+/* Seed results */
+.seeds-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.seeds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.seed-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.15s;
+}
+
+.seed-card:hover { border-color: var(--border2); }
+
+.seed-card--holiday {
+  border-color: rgba(191, 161, 74, 0.4);
+  background: rgba(191, 161, 74, 0.04);
+}
+
+.seed-holiday-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gold);
+}
+
+.seed-phrase {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+.seed-angle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--red);
+}
+
+.seed-audience {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.seed-thesis {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-style: italic;
+  flex: 1;
+}
+
+.seed-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
 /* ─── RESPONSIVE ─── */
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns: 1fr 1fr; }
