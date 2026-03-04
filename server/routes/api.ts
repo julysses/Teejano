@@ -15,7 +15,7 @@ import { generateMockups } from "../../scripts/mockup_generator";
 import { generateEmailSequence } from "../../scripts/email_automations";
 import { generateTrackingTemplate } from "../../scripts/analytics_ingest";
 import { CoworkInput, ScoredConcept } from "../../scripts/types";
-import { callAI } from "../services/ai";
+import { callAI, fetchTrends } from "../services/ai";
 import { buildFullPrompt } from "../services/dropContext";
 
 export const router = Router();
@@ -170,8 +170,12 @@ router.post("/pipeline/start", async (req, res) => {
     const destDir = path.join(dropDir, "COWORK");
     fs.mkdirSync(path.join(destDir, "inputs"), { recursive: true });
 
+    // Auto-fetch current trends from GPT (user hints merged in; never blocks if it fails)
+    const fetchedTrends = await fetchTrends(week, trends);
+    const combinedTrends = fetchedTrends.trim() || trends.trim();
+
     // Build one unified prompt: master design engine + drop context (holidays + trends)
-    const fullPrompt = buildFullPrompt(week, trends);
+    const fullPrompt = buildFullPrompt(week, combinedTrends);
 
     // All three sources get the same master prompt — different AI models give different creative perspectives
     const promptFiles = ["01_chatgpt_prompt.txt", "02_gemini_prompt.txt", "03_design_arena_prompt.txt"];
@@ -182,15 +186,15 @@ router.post("/pipeline/start", async (req, res) => {
       prompts[filename] = fullPrompt;
     }
 
-    // Save the raw trends for reference
-    if (trends.trim()) {
-      fs.writeFileSync(path.join(destDir, "drop_context.txt"), trends.trim());
+    // Save the combined trends for reference
+    if (combinedTrends) {
+      fs.writeFileSync(path.join(destDir, "drop_context.txt"), combinedTrends);
     }
 
-    appendLog(dropDir, `Drop initialized for week ${week}${trends ? " with custom trends" : ""}`);
+    appendLog(dropDir, `Drop initialized for week ${week} with auto-fetched trends`);
     pipelineStatus[week] = { phase: "awaiting_cowork", running: false };
 
-    res.json({ success: true, week, drop_dir: `drops/${week}`, prompts });
+    res.json({ success: true, week, drop_dir: `drops/${week}`, fetchedTrends, prompts });
   } catch (err: any) {
     pipelineStatus[week] = { phase: "error", running: false, error: err.message };
     res.status(500).json({ error: err.message });

@@ -203,7 +203,9 @@ async function startNewDrop() {
     if (!confirm(`Drop ${week} already exists. Start it again (this will reset prompts)?`)) return;
   }
 
-  showToast(`Starting drop for ${week}...`);
+  const btn = document.getElementById('btn-start-drop');
+  btn.disabled = true;
+  btn.textContent = '⏳ Fetching trends…';
 
   try {
     const res = await fetch(`${API}/api/pipeline/start`, {
@@ -214,15 +216,27 @@ async function startNewDrop() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
-    showToast(`Drop ${week} initialized! Master prompt ready.`, 'success');
     document.getElementById('drop-trends-input').value = '';
     await loadDropsData();
     updateDashboard();
     navigateTo('cowork');
     document.getElementById('cowork-week-select').value = week;
     loadCoworkPage();
+
+    // Show fetched trends banner in Design Studio
+    if (data.fetchedTrends) {
+      const banner = document.getElementById('studio-trends-banner');
+      const text = document.getElementById('studio-trends-text');
+      text.textContent = data.fetchedTrends;
+      banner.style.display = 'flex';
+    }
+
+    showToast(`Drop ${week} ready — trends loaded. Hit Generate All!`, 'success');
   } catch (e) {
     showToast(e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Start Drop →';
   }
 }
 

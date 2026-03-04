@@ -52,3 +52,36 @@ export async function callAI(
   if (source === "gemini") return callGemini(prompt);
   return callGPT(prompt); // chatgpt + design_arena both use GPT
 }
+
+/**
+ * Ask GPT for current Texas-relevant trends for the given week.
+ * Returns a short, actionable trend brief for injection into the design prompt.
+ * Never throws — returns empty string on failure so the drop can still start.
+ */
+export async function fetchTrends(week: string, userHints: string = ""): Promise<string> {
+  try {
+    const hintsLine = userHints.trim()
+      ? `\nAlso incorporate these hints from the brand owner: ${userHints.trim()}`
+      : "";
+
+    const prompt = `Today is ${new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}. The drop week is ${week}.
+
+You are a trend researcher for TEEJANO, a Texas streetwear brand. In 8–12 punchy bullet points, list the most relevant cultural signals RIGHT NOW for Texas t-shirt design. Cover:
+
+- Texas news or viral moments this week
+- Texas sports (Cowboys, Texans, Spurs, Longhorns, Aggies, local teams)
+- Upcoming Texas holidays or events in the next 3 weeks
+- Texas weather patterns or memes circulating now
+- Viral Texas humor or sayings trending on social media
+- BBQ / food / truck culture moments
+- Gym / fitness culture moments relevant to Texas
+- Tejano / Mexican-American cultural moments${hintsLine}
+
+Be specific and actionable — these will directly inform t-shirt phrases and visuals.
+Format: one bullet per line, no headers, no explanation. Just the bullets.`;
+
+    return await callGPT(prompt);
+  } catch {
+    return userHints.trim(); // fall back to user hints only
+  }
+}

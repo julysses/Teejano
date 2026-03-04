@@ -105,9 +105,9 @@
       <div class="action-card action-card-wide" id="action-start-drop">
         <div class="action-icon">⬡</div>
         <div class="action-title">Start New Drop</div>
-        <div class="action-desc">Initialize this week's pipeline. Add current trends so each drop generates fresh designs.</div>
-        <textarea id="drop-trends-input" class="drop-trends-textarea" placeholder="Paste this week's trends, news &amp; design focus here — e.g. Houston Rodeo vibes, Texas heat wave memes, March Madness energy, Lent BBQ humor, viral Texas tweets…"></textarea>
-        <button class="btn btn-primary btn-sm" onclick="startNewDrop()">Start Drop →</button>
+        <div class="action-desc">GPT will auto-fetch this week's Texas trends. Optionally add your own ideas below.</div>
+        <textarea id="drop-trends-input" class="drop-trends-textarea" placeholder="Optional — add your own ideas, news, or design focus (e.g. Houston Rodeo vibes, March Madness, specific products you want to push…). Leave blank and GPT will handle it."></textarea>
+        <button class="btn btn-primary btn-sm" id="btn-start-drop" onclick="startNewDrop()">Start Drop →</button>
       </div>
       <div class="action-card" id="action-score">
         <div class="action-icon">★</div>
@@ -154,6 +154,12 @@
         <label>Week</label>
         <select id="cowork-week-select" onchange="loadCoworkPage()"></select>
       </div>
+    </div>
+
+    <div id="studio-trends-banner" class="studio-trends-banner" style="display:none">
+      <div class="trends-banner-label">⚡ Trends fetched by GPT</div>
+      <div id="studio-trends-text" class="trends-banner-text"></div>
+      <button class="trends-banner-close" onclick="document.getElementById('studio-trends-banner').style.display='none'">✕</button>
     </div>
 
     <div class="studio-toolbar">
