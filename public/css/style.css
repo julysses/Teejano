@@ -294,7 +294,7 @@ html, body {
 /* ─── QUICK ACTIONS ─── */
 .quick-actions-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 16px;
   margin-top: 20px;
 }
@@ -311,7 +311,23 @@ html, body {
 
 .action-icon { font-size: 20px; }
 .action-title { font-weight: 700; font-size: 14px; }
-.action-desc { font-size: 12px; color: var(--text-muted); flex: 1; }
+.action-desc { font-size: 12px; color: var(--text-muted); }
+
+.drop-trends-textarea {
+  width: 100%;
+  min-height: 72px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 8px 10px;
+  resize: vertical;
+  flex: 1;
+}
+.drop-trends-textarea:focus { outline: none; border-color: var(--red); }
 
 /* ─── TABLES ─── */
 .drops-table, .drops-list {

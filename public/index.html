@@ -102,11 +102,12 @@
     </div>
 
     <div class="quick-actions-grid">
-      <div class="action-card" id="action-start-drop">
+      <div class="action-card action-card-wide" id="action-start-drop">
         <div class="action-icon">⬡</div>
         <div class="action-title">Start New Drop</div>
-        <div class="action-desc">Initialize this week's pipeline &amp; generate cowork prompts</div>
-        <button class="btn btn-primary btn-sm" onclick="startNewDrop()">Start</button>
+        <div class="action-desc">Initialize this week's pipeline. Add current trends so each drop generates fresh designs.</div>
+        <textarea id="drop-trends-input" class="drop-trends-textarea" placeholder="Paste this week's trends, news &amp; design focus here — e.g. Houston Rodeo vibes, Texas heat wave memes, March Madness energy, Lent BBQ humor, viral Texas tweets…"></textarea>
+        <button class="btn btn-primary btn-sm" onclick="startNewDrop()">Start Drop →</button>
       </div>
       <div class="action-card" id="action-score">
         <div class="action-icon">★</div>

@@ -196,6 +196,8 @@ async function startNewDrop() {
   const week = state.currentWeek;
   if (!week) return showToast('Could not determine current week', 'error');
 
+  const trends = document.getElementById('drop-trends-input')?.value?.trim() ?? '';
+
   const existing = state.drops.find(d => d.week === week);
   if (existing) {
     if (!confirm(`Drop ${week} already exists. Start it again (this will reset prompts)?`)) return;
@@ -207,12 +209,13 @@ async function startNewDrop() {
     const res = await fetch(`${API}/api/pipeline/start`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ week }),
+      body: JSON.stringify({ week, trends }),
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
-    showToast(`Drop ${week} initialized! Cowork prompts ready.`, 'success');
+    showToast(`Drop ${week} initialized! Master prompt ready.`, 'success');
+    document.getElementById('drop-trends-input').value = '';
     await loadDropsData();
     updateDashboard();
     navigateTo('cowork');

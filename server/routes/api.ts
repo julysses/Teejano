@@ -16,6 +16,7 @@ import { generateEmailSequence } from "../../scripts/email_automations";
 import { generateTrackingTemplate } from "../../scripts/analytics_ingest";
 import { CoworkInput, ScoredConcept } from "../../scripts/types";
 import { callAI } from "../services/ai";
+import { buildFullPrompt } from "../services/dropContext";
 
 export const router = Router();
 
@@ -156,7 +157,7 @@ router.get("/drops/:week", (req, res) => {
 
 /** POST /api/pipeline/start — create a new drop, generate cowork prompts */
 router.post("/pipeline/start", async (req, res) => {
-  const { week = getCurrentWeek() } = req.body as { week?: string };
+  const { week = getCurrentWeek(), trends = "" } = req.body as { week?: string; trends?: string };
 
   if (pipelineStatus[week]?.running) {
     return res.status(409).json({ error: "Pipeline already running for this week" });
@@ -166,30 +167,27 @@ router.post("/pipeline/start", async (req, res) => {
   pipelineStatus[week] = { phase: "generating_prompts", running: true };
 
   try {
-    // Copy cowork prompts to drop directory
-    const srcDir = path.join(process.cwd(), "prompts");
     const destDir = path.join(dropDir, "COWORK");
     fs.mkdirSync(path.join(destDir, "inputs"), { recursive: true });
 
-    const promptMap: [string, string][] = [
-      ["cowork_chatgpt_idea_miner.txt", "01_chatgpt_prompt.txt"],
-      ["cowork_gemini_angle_miner.txt", "02_gemini_prompt.txt"],
-      ["cowork_design_arena_visual_miner.txt", "03_design_arena_prompt.txt"],
-    ];
+    // Build one unified prompt: master design engine + drop context (holidays + trends)
+    const fullPrompt = buildFullPrompt(week, trends);
 
+    // All three sources get the same master prompt — different AI models give different creative perspectives
+    const promptFiles = ["01_chatgpt_prompt.txt", "02_gemini_prompt.txt", "03_design_arena_prompt.txt"];
     const prompts: Record<string, string> = {};
-    for (const [src, dest] of promptMap) {
-      const srcPath = path.join(srcDir, src);
-      const destPath = path.join(destDir, dest);
-      if (fileExists(srcPath)) {
-        let content = fs.readFileSync(srcPath, "utf-8");
-        content = `# Generated for Drop Week: ${week}\n\n` + content;
-        fs.writeFileSync(destPath, content);
-        prompts[dest] = content;
-      }
+    for (const filename of promptFiles) {
+      const destPath = path.join(destDir, filename);
+      fs.writeFileSync(destPath, fullPrompt);
+      prompts[filename] = fullPrompt;
     }
 
-    appendLog(dropDir, `Drop initialized for week ${week}`);
+    // Save the raw trends for reference
+    if (trends.trim()) {
+      fs.writeFileSync(path.join(destDir, "drop_context.txt"), trends.trim());
+    }
+
+    appendLog(dropDir, `Drop initialized for week ${week}${trends ? " with custom trends" : ""}`);
     pipelineStatus[week] = { phase: "awaiting_cowork", running: false };
 
     res.json({ success: true, week, drop_dir: `drops/${week}`, prompts });
