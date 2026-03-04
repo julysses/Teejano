@@ -196,30 +196,47 @@ async function startNewDrop() {
   const week = state.currentWeek;
   if (!week) return showToast('Could not determine current week', 'error');
 
+  const trends = document.getElementById('drop-trends-input')?.value?.trim() ?? '';
+
   const existing = state.drops.find(d => d.week === week);
   if (existing) {
     if (!confirm(`Drop ${week} already exists. Start it again (this will reset prompts)?`)) return;
   }
 
-  showToast(`Starting drop for ${week}...`);
+  const btn = document.getElementById('btn-start-drop');
+  btn.disabled = true;
+  btn.textContent = '⏳ Fetching trends…';
 
   try {
     const res = await fetch(`${API}/api/pipeline/start`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ week }),
+      body: JSON.stringify({ week, trends }),
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
-    showToast(`Drop ${week} initialized! Cowork prompts ready.`, 'success');
+    document.getElementById('drop-trends-input').value = '';
     await loadDropsData();
     updateDashboard();
     navigateTo('cowork');
     document.getElementById('cowork-week-select').value = week;
     loadCoworkPage();
+
+    // Show fetched trends banner in Design Studio
+    if (data.fetchedTrends) {
+      const banner = document.getElementById('studio-trends-banner');
+      const text = document.getElementById('studio-trends-text');
+      text.textContent = data.fetchedTrends;
+      banner.style.display = 'flex';
+    }
+
+    showToast(`Drop ${week} ready — trends loaded. Hit Generate All!`, 'success');
   } catch (e) {
     showToast(e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Start Drop →';
   }
 }
 
@@ -318,8 +335,10 @@ function goToApproval() {
 }
 
 // ─────────────────────────────────────────────
-// COWORK PAGE
+// DESIGN STUDIO PAGE
 // ─────────────────────────────────────────────
+
+const SOURCES = ['chatgpt', 'gemini', 'design_arena'];
 
 async function loadCoworkPage() {
   const week = document.getElementById('cowork-week-select')?.value ?? state.activeWeek;
@@ -330,50 +349,123 @@ async function loadCoworkPage() {
     const res = await fetch(`${API}/api/drops/${week}`);
     const data = await res.json();
 
-    // Load prompts
-    for (const source of ['chatgpt', 'gemini', 'design_arena']) {
-      document.getElementById(`prompt-${source}`).value = data.prompts?.[
-        source === 'chatgpt' ? '01_chatgpt_prompt.txt' :
-        source === 'gemini' ? '02_gemini_prompt.txt' : '03_design_arena_prompt.txt'
-      ] ?? '';
-
-      const statusEl = document.getElementById(`status-${source}`);
-      if (data.cowork_inputs?.[source]) {
-        statusEl.textContent = '✓ Submitted';
-        statusEl.classList.add('submitted');
-      } else {
-        statusEl.textContent = '⬡ Not submitted';
-        statusEl.classList.remove('submitted');
-      }
+    for (const source of SOURCES) {
+      const generated = data.cowork_inputs?.[source];
+      setSourceStatus(source, generated ? 'done' : 'idle');
     }
   } catch (e) {
-    showToast('Could not load cowork data', 'error');
+    showToast('Could not load design studio data', 'error');
   }
 }
 
-function switchCoworkTab(source, btn) {
-  document.querySelectorAll('.cowork-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.cowork-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`cowork-${source}`)?.classList.add('active');
-  btn.classList.add('active');
+/** Update a source card's visual state: idle | loading | done | error */
+function setSourceStatus(source, state, message) {
+  const statusEl = document.getElementById(`status-${source}`);
+  const card = document.getElementById(`source-card-${source}`);
+  const btn = document.getElementById(`gen-btn-${source}`);
+
+  card.classList.remove('state-loading', 'state-done', 'state-error');
+
+  if (state === 'idle') {
+    statusEl.textContent = '⬡ Not generated';
+    statusEl.className = 'source-status';
+    btn.disabled = false;
+    btn.textContent = 'Generate';
+  } else if (state === 'loading') {
+    statusEl.textContent = '⏳ Generating…';
+    statusEl.className = 'source-status status-loading';
+    card.classList.add('state-loading');
+    btn.disabled = true;
+    btn.textContent = '…';
+  } else if (state === 'done') {
+    statusEl.textContent = '✓ ' + (message || '10 concepts ready');
+    statusEl.className = 'source-status status-done';
+    card.classList.add('state-done');
+    btn.disabled = false;
+    btn.textContent = 'Regenerate';
+  } else if (state === 'error') {
+    statusEl.textContent = '✗ Failed';
+    statusEl.className = 'source-status status-error';
+    card.classList.add('state-error');
+    btn.disabled = false;
+    btn.textContent = 'Retry';
+  }
 }
 
-async function copyPrompt(source) {
-  const textarea = document.getElementById(`prompt-${source}`);
+/** Parse concepts from a raw AI response and render as cards. */
+function renderConcepts(source, rawContent) {
+  const container = document.getElementById(`concepts-${source}`);
+  if (!container) return;
+
+  let concepts = [];
   try {
-    await navigator.clipboard.writeText(textarea.value);
-    showToast('Prompt copied to clipboard!', 'success');
+    const match = rawContent.match(/\[[\s\S]*\]/);
+    if (match) concepts = JSON.parse(match[0]);
   } catch {
-    textarea.select();
-    document.execCommand('copy');
-    showToast('Copied!', 'success');
+    container.innerHTML = '<div class="concepts-empty">Could not parse concepts — check the manual paste area.</div>';
+    return;
   }
+
+  if (!concepts.length) {
+    container.innerHTML = '<div class="concepts-empty">No concepts found in response.</div>';
+    return;
+  }
+
+  container.innerHTML = concepts.map((c, i) => `
+    <div class="concept-pill">
+      <span class="concept-num">${String(i + 1).padStart(2, '0')}</span>
+      <span class="concept-phrase">${escHtml(c.PHRASE || c.phrase || '—')}</span>
+      <span class="concept-angle">${escHtml(c.ANGLE || c.angle || '')}</span>
+    </div>
+  `).join('');
+}
+
+async function generateWithAI(source) {
+  const week = document.getElementById('cowork-week-select')?.value ?? state.activeWeek;
+  if (!week) return showToast('No active week — start a drop first.', 'error');
+
+  setSourceStatus(source, 'loading');
+
+  try {
+    const res = await fetch(`${API}/api/drops/${week}/cowork/${source}/generate`, { method: 'POST' });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    renderConcepts(source, data.content);
+    setSourceStatus(source, 'done');
+    showToast(`${source === 'gemini' ? 'Gemini' : 'GPT'} generated 10 concepts!`, 'success');
+  } catch (e) {
+    setSourceStatus(source, 'error');
+    showToast(e.message, 'error');
+  }
+}
+
+async function generateAll() {
+  const week = document.getElementById('cowork-week-select')?.value ?? state.activeWeek;
+  if (!week) return showToast('No active week — start a drop first.', 'error');
+
+  const allBtn = document.getElementById('btn-generate-all');
+  allBtn.disabled = true;
+  allBtn.textContent = '⏳ Generating all…';
+
+  // Fire all 3 in parallel
+  await Promise.allSettled(SOURCES.map(s => generateWithAI(s)));
+
+  allBtn.disabled = false;
+  allBtn.textContent = '⚡ Generate All Designs';
+}
+
+function toggleManual(source, btn) {
+  const area = document.getElementById(`manual-${source}`);
+  const visible = area.style.display !== 'none';
+  area.style.display = visible ? 'none' : 'block';
+  btn.textContent = visible ? '+ Paste manually instead' : '− Hide manual input';
 }
 
 async function submitCoworkResponse(source) {
   const week = document.getElementById('cowork-week-select')?.value ?? state.activeWeek;
   const content = document.getElementById(`response-${source}`)?.value?.trim();
-  if (!content) return showToast('Paste the AI response first', 'error');
+  if (!content) return showToast('Paste a response first', 'error');
   if (!week) return showToast('No active week', 'error');
 
   try {
@@ -385,9 +477,9 @@ async function submitCoworkResponse(source) {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
-    showToast(`${source} response submitted!`, 'success');
-    document.getElementById(`status-${source}`).textContent = '✓ Submitted';
-    document.getElementById(`status-${source}`).classList.add('submitted');
+    renderConcepts(source, content);
+    setSourceStatus(source, 'done');
+    showToast('Concepts saved!', 'success');
   } catch (e) {
     showToast(e.message, 'error');
   }

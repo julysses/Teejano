@@ -15,6 +15,8 @@ import { generateMockups } from "../../scripts/mockup_generator";
 import { generateEmailSequence } from "../../scripts/email_automations";
 import { generateTrackingTemplate } from "../../scripts/analytics_ingest";
 import { CoworkInput, ScoredConcept } from "../../scripts/types";
+import { callAI, fetchTrends } from "../services/ai";
+import { buildFullPrompt } from "../services/dropContext";
 
 export const router = Router();
 
@@ -155,7 +157,7 @@ router.get("/drops/:week", (req, res) => {
 
 /** POST /api/pipeline/start — create a new drop, generate cowork prompts */
 router.post("/pipeline/start", async (req, res) => {
-  const { week = getCurrentWeek() } = req.body as { week?: string };
+  const { week = getCurrentWeek(), trends = "" } = req.body as { week?: string; trends?: string };
 
   if (pipelineStatus[week]?.running) {
     return res.status(409).json({ error: "Pipeline already running for this week" });
@@ -165,33 +167,34 @@ router.post("/pipeline/start", async (req, res) => {
   pipelineStatus[week] = { phase: "generating_prompts", running: true };
 
   try {
-    // Copy cowork prompts to drop directory
-    const srcDir = path.join(process.cwd(), "prompts");
     const destDir = path.join(dropDir, "COWORK");
     fs.mkdirSync(path.join(destDir, "inputs"), { recursive: true });
 
-    const promptMap: [string, string][] = [
-      ["cowork_chatgpt_idea_miner.txt", "01_chatgpt_prompt.txt"],
-      ["cowork_gemini_angle_miner.txt", "02_gemini_prompt.txt"],
-      ["cowork_design_arena_visual_miner.txt", "03_design_arena_prompt.txt"],
-    ];
+    // Auto-fetch current trends from GPT (user hints merged in; never blocks if it fails)
+    const fetchedTrends = await fetchTrends(week, trends);
+    const combinedTrends = fetchedTrends.trim() || trends.trim();
 
+    // Build one unified prompt: master design engine + drop context (holidays + trends)
+    const fullPrompt = buildFullPrompt(week, combinedTrends);
+
+    // All three sources get the same master prompt — different AI models give different creative perspectives
+    const promptFiles = ["01_chatgpt_prompt.txt", "02_gemini_prompt.txt", "03_design_arena_prompt.txt"];
     const prompts: Record<string, string> = {};
-    for (const [src, dest] of promptMap) {
-      const srcPath = path.join(srcDir, src);
-      const destPath = path.join(destDir, dest);
-      if (fileExists(srcPath)) {
-        let content = fs.readFileSync(srcPath, "utf-8");
-        content = `# Generated for Drop Week: ${week}\n\n` + content;
-        fs.writeFileSync(destPath, content);
-        prompts[dest] = content;
-      }
+    for (const filename of promptFiles) {
+      const destPath = path.join(destDir, filename);
+      fs.writeFileSync(destPath, fullPrompt);
+      prompts[filename] = fullPrompt;
     }
 
-    appendLog(dropDir, `Drop initialized for week ${week}`);
+    // Save the combined trends for reference
+    if (combinedTrends) {
+      fs.writeFileSync(path.join(destDir, "drop_context.txt"), combinedTrends);
+    }
+
+    appendLog(dropDir, `Drop initialized for week ${week} with auto-fetched trends`);
     pipelineStatus[week] = { phase: "awaiting_cowork", running: false };
 
-    res.json({ success: true, week, drop_dir: `drops/${week}`, prompts });
+    res.json({ success: true, week, drop_dir: `drops/${week}`, fetchedTrends, prompts });
   } catch (err: any) {
     pipelineStatus[week] = { phase: "error", running: false, error: err.message };
     res.status(500).json({ error: err.message });
@@ -388,6 +391,50 @@ router.post("/drops/:week/cowork/:source", (req, res) => {
   fs.writeFileSync(path.join(inputsDir, `${source}_response.txt`), content);
 
   res.json({ success: true, source, week });
+});
+
+/** POST /api/drops/:week/cowork/:source/generate — call AI directly and store result */
+router.post("/drops/:week/cowork/:source/generate", async (req, res) => {
+  const { week, source } = req.params;
+  const validSources = ["chatgpt", "gemini", "design_arena"] as const;
+  if (!validSources.includes(source as typeof validSources[number])) {
+    return res.status(400).json({ error: "Invalid source" });
+  }
+
+  // Load the prompt for this source
+  const fileMap: Record<string, string> = {
+    chatgpt: "01_chatgpt_prompt.txt",
+    gemini: "02_gemini_prompt.txt",
+    design_arena: "03_design_arena_prompt.txt",
+  };
+  const promptPath = path.join(process.cwd(), "drops", week, "COWORK", fileMap[source]);
+  const basePath = path.join(process.cwd(), "prompts", `cowork_${source === "design_arena" ? "design_arena_visual_miner" : source + (source === "chatgpt" ? "_idea_miner" : "_angle_miner")}.txt`);
+  const promptFile = fileExists(promptPath) ? promptPath : fileExists(basePath) ? basePath : null;
+
+  if (!promptFile) return res.status(404).json({ error: "Prompt not found. Start a drop first." });
+
+  const prompt = fs.readFileSync(promptFile, "utf-8");
+
+  try {
+    const content = await callAI(source as typeof validSources[number], prompt);
+
+    // Validate response contains a JSON array
+    const match = content.match(/\[[\s\S]*\]/);
+    if (!match) return res.status(502).json({ error: "AI response did not contain a valid JSON array", raw: content });
+    try { JSON.parse(match[0]); } catch {
+      return res.status(502).json({ error: "AI response contained malformed JSON", raw: content });
+    }
+
+    // Save to COWORK/inputs just like a manual submission
+    const inputsDir = path.join(process.cwd(), "drops", week, "COWORK", "inputs");
+    fs.mkdirSync(inputsDir, { recursive: true });
+    fs.writeFileSync(path.join(inputsDir, `${source}_response.txt`), content);
+
+    res.json({ success: true, source, week, content });
+  } catch (err: any) {
+    const msg = err?.message ?? String(err);
+    res.status(500).json({ error: msg });
+  }
 });
 
 /** GET /api/drops/:week/prompts/:source — get a cowork prompt */
