@@ -36,7 +36,7 @@ export async function callGPT(prompt: string): Promise<string> {
 export async function callGemini(prompt: string): Promise<string> {
   const genai = getGemini();
   const response = await genai.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.0-flash-001",
     contents: prompt,
   });
   const text = response.text;
