@@ -15,6 +15,7 @@ import { generateMockups } from "../../scripts/mockup_generator";
 import { generateEmailSequence } from "../../scripts/email_automations";
 import { generateTrackingTemplate } from "../../scripts/analytics_ingest";
 import { CoworkInput, ScoredConcept } from "../../scripts/types";
+import { callAI } from "../services/ai";
 
 export const router = Router();
 
@@ -388,6 +389,50 @@ router.post("/drops/:week/cowork/:source", (req, res) => {
   fs.writeFileSync(path.join(inputsDir, `${source}_response.txt`), content);
 
   res.json({ success: true, source, week });
+});
+
+/** POST /api/drops/:week/cowork/:source/generate — call AI directly and store result */
+router.post("/drops/:week/cowork/:source/generate", async (req, res) => {
+  const { week, source } = req.params;
+  const validSources = ["chatgpt", "gemini", "design_arena"] as const;
+  if (!validSources.includes(source as typeof validSources[number])) {
+    return res.status(400).json({ error: "Invalid source" });
+  }
+
+  // Load the prompt for this source
+  const fileMap: Record<string, string> = {
+    chatgpt: "01_chatgpt_prompt.txt",
+    gemini: "02_gemini_prompt.txt",
+    design_arena: "03_design_arena_prompt.txt",
+  };
+  const promptPath = path.join(process.cwd(), "drops", week, "COWORK", fileMap[source]);
+  const basePath = path.join(process.cwd(), "prompts", `cowork_${source === "design_arena" ? "design_arena_visual_miner" : source + (source === "chatgpt" ? "_idea_miner" : "_angle_miner")}.txt`);
+  const promptFile = fileExists(promptPath) ? promptPath : fileExists(basePath) ? basePath : null;
+
+  if (!promptFile) return res.status(404).json({ error: "Prompt not found. Start a drop first." });
+
+  const prompt = fs.readFileSync(promptFile, "utf-8");
+
+  try {
+    const content = await callAI(source as typeof validSources[number], prompt);
+
+    // Validate response contains a JSON array
+    const match = content.match(/\[[\s\S]*\]/);
+    if (!match) return res.status(502).json({ error: "AI response did not contain a valid JSON array", raw: content });
+    try { JSON.parse(match[0]); } catch {
+      return res.status(502).json({ error: "AI response contained malformed JSON", raw: content });
+    }
+
+    // Save to COWORK/inputs just like a manual submission
+    const inputsDir = path.join(process.cwd(), "drops", week, "COWORK", "inputs");
+    fs.mkdirSync(inputsDir, { recursive: true });
+    fs.writeFileSync(path.join(inputsDir, `${source}_response.txt`), content);
+
+    res.json({ success: true, source, week, content });
+  } catch (err: any) {
+    const msg = err?.message ?? String(err);
+    res.status(500).json({ error: msg });
+  }
 });
 
 /** GET /api/drops/:week/prompts/:source — get a cowork prompt */

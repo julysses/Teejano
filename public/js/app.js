@@ -393,6 +393,36 @@ async function submitCoworkResponse(source) {
   }
 }
 
+async function generateWithAI(source) {
+  const week = document.getElementById('cowork-week-select')?.value ?? state.activeWeek;
+  if (!week) return showToast('No active week selected', 'error');
+
+  const btn = document.getElementById(`gen-btn-${source}`);
+  const responseEl = document.getElementById(`response-${source}`);
+  const statusEl = document.getElementById(`status-${source}`);
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating…';
+  responseEl.placeholder = 'Calling AI… this may take 15–30 seconds…';
+
+  try {
+    const res = await fetch(`${API}/api/drops/${week}/cowork/${source}/generate`, { method: 'POST' });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    responseEl.value = data.content;
+    statusEl.textContent = '✓ Submitted';
+    statusEl.classList.add('submitted');
+    showToast(`${source} generated and saved!`, 'success');
+  } catch (e) {
+    showToast(e.message, 'error');
+    responseEl.placeholder = 'Generation failed. Paste response manually or try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = source === 'gemini' ? '⚡ Generate with Gemini' : '⚡ Generate with GPT';
+  }
+}
+
 // ─────────────────────────────────────────────
 // FINALISTS PAGE
 // ─────────────────────────────────────────────

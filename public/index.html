@@ -155,7 +155,7 @@
       </div>
     </div>
 
-    <p class="page-desc">Paste each prompt into the AI tool, then submit the response here.</p>
+    <p class="page-desc">Click <strong>Generate</strong> to call the AI directly, or paste a manual response below.</p>
 
     <div class="cowork-tabs">
       <button class="tab-btn active" onclick="switchCoworkTab('chatgpt', this)">ChatGPT</button>
@@ -166,16 +166,19 @@
     <div id="cowork-chatgpt" class="cowork-panel active">
       <div class="cowork-prompt-header">
         <span class="cowork-status" id="status-chatgpt">⬡ Not submitted</span>
-        <button class="btn btn-sm btn-outline" onclick="copyPrompt('chatgpt')">Copy Prompt</button>
+        <div class="cowork-header-actions">
+          <button class="btn btn-sm btn-outline" onclick="copyPrompt('chatgpt')">Copy Prompt</button>
+          <button class="btn btn-sm btn-ai" id="gen-btn-chatgpt" onclick="generateWithAI('chatgpt')">⚡ Generate with GPT</button>
+        </div>
       </div>
       <div class="cowork-split">
         <div class="cowork-half">
-          <div class="panel-label">PROMPT — Paste into ChatGPT</div>
+          <div class="panel-label">PROMPT</div>
           <textarea class="prompt-textarea" id="prompt-chatgpt" readonly placeholder="Start a drop first to generate prompts..."></textarea>
         </div>
         <div class="cowork-half">
-          <div class="panel-label">RESPONSE — Paste ChatGPT's reply here</div>
-          <textarea class="response-textarea" id="response-chatgpt" placeholder='Paste the JSON array response here. Must start with [{"CONCEPT_ID": ...'></textarea>
+          <div class="panel-label">RESPONSE — or paste manually</div>
+          <textarea class="response-textarea" id="response-chatgpt" placeholder='AI response will appear here, or paste manually...'></textarea>
           <button class="btn btn-primary btn-submit-response" onclick="submitCoworkResponse('chatgpt')">Submit Response</button>
         </div>
       </div>
@@ -184,16 +187,19 @@
     <div id="cowork-gemini" class="cowork-panel">
       <div class="cowork-prompt-header">
         <span class="cowork-status" id="status-gemini">⬡ Not submitted</span>
-        <button class="btn btn-sm btn-outline" onclick="copyPrompt('gemini')">Copy Prompt</button>
+        <div class="cowork-header-actions">
+          <button class="btn btn-sm btn-outline" onclick="copyPrompt('gemini')">Copy Prompt</button>
+          <button class="btn btn-sm btn-ai" id="gen-btn-gemini" onclick="generateWithAI('gemini')">⚡ Generate with Gemini</button>
+        </div>
       </div>
       <div class="cowork-split">
         <div class="cowork-half">
-          <div class="panel-label">PROMPT — Paste into Gemini</div>
+          <div class="panel-label">PROMPT</div>
           <textarea class="prompt-textarea" id="prompt-gemini" readonly placeholder="Start a drop first..."></textarea>
         </div>
         <div class="cowork-half">
-          <div class="panel-label">RESPONSE — Paste Gemini's reply here</div>
-          <textarea class="response-textarea" id="response-gemini" placeholder="Paste the JSON array response..."></textarea>
+          <div class="panel-label">RESPONSE — or paste manually</div>
+          <textarea class="response-textarea" id="response-gemini" placeholder="AI response will appear here, or paste manually..."></textarea>
           <button class="btn btn-primary btn-submit-response" onclick="submitCoworkResponse('gemini')">Submit Response</button>
         </div>
       </div>
@@ -202,16 +208,19 @@
     <div id="cowork-design_arena" class="cowork-panel">
       <div class="cowork-prompt-header">
         <span class="cowork-status" id="status-design_arena">⬡ Not submitted</span>
-        <button class="btn btn-sm btn-outline" onclick="copyPrompt('design_arena')">Copy Prompt</button>
+        <div class="cowork-header-actions">
+          <button class="btn btn-sm btn-outline" onclick="copyPrompt('design_arena')">Copy Prompt</button>
+          <button class="btn btn-sm btn-ai" id="gen-btn-design_arena" onclick="generateWithAI('design_arena')">⚡ Generate with GPT</button>
+        </div>
       </div>
       <div class="cowork-split">
         <div class="cowork-half">
-          <div class="panel-label">PROMPT — Paste into Design Arena</div>
+          <div class="panel-label">PROMPT</div>
           <textarea class="prompt-textarea" id="prompt-design_arena" readonly placeholder="Start a drop first..."></textarea>
         </div>
         <div class="cowork-half">
-          <div class="panel-label">RESPONSE — Paste Design Arena's reply here</div>
-          <textarea class="response-textarea" id="response-design_arena" placeholder="Paste the JSON array response..."></textarea>
+          <div class="panel-label">RESPONSE — or paste manually</div>
+          <textarea class="response-textarea" id="response-design_arena" placeholder="AI response will appear here, or paste manually..."></textarea>
           <button class="btn btn-primary btn-submit-response" onclick="submitCoworkResponse('design_arena')">Submit Response</button>
         </div>
       </div>
