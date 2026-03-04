@@ -837,7 +837,17 @@ router.post("/ideas/seeds", (req, res) => {
 
 /** GET /api/health */
 router.get("/health", (_req, res) => {
-  res.json({ status: "ok", version: "2.0.0", current_week: getCurrentWeek() });
+  res.json({
+    status: "ok",
+    version: "2.0.0",
+    current_week: getCurrentWeek(),
+    env: {
+      OPENAI_API_KEY: !!process.env.OPENAI_API_KEY,
+      GEMINI_API_KEY: !!process.env.GEMINI_API_KEY,
+      SHOPIFY_SHOP_DOMAIN: !!process.env.SHOPIFY_SHOP_DOMAIN,
+      SHOPIFY_ADMIN_ACCESS_TOKEN: !!process.env.SHOPIFY_ADMIN_ACCESS_TOKEN,
+    },
+  });
 });
 
 // ─────────────────────────────────────────────

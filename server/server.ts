@@ -43,6 +43,9 @@ app.listen(PORT, () => {
   console.log(`   Dashboard: http://localhost:${PORT}`);
   console.log(`   API:       http://localhost:${PORT}/api`);
   console.log(`   Press Ctrl+C to stop\n`);
+  console.log(`[ENV CHECK] OPENAI_API_KEY: ${process.env.OPENAI_API_KEY ? "SET" : "MISSING"}`);
+  console.log(`[ENV CHECK] GEMINI_API_KEY: ${process.env.GEMINI_API_KEY ? "SET" : "MISSING"}`);
+  console.log(`[ENV CHECK] SHOPIFY_SHOP_DOMAIN: ${process.env.SHOPIFY_SHOP_DOMAIN ? "SET" : "MISSING"}`);
 });
 
 export default app;
