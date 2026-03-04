@@ -20,6 +20,9 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static frontend files
 app.use(express.static(path.join(__dirname, "..", "public")));
 
+// Serve drop assets (mockup images) as static files
+app.use("/drops", express.static(path.join(process.cwd(), "drops")));
+
 // All API routes
 app.use("/api", apiRouter);
 

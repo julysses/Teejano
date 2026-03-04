@@ -10,6 +10,9 @@ let state = {
   activeDropData: null,
   configName: null,
   approvalState: false,
+  briefs: [],
+  mockups: [],
+  holidays: [],
 };
 
 // ─────────────────────────────────────────────
@@ -33,6 +36,7 @@ function navigateTo(page) {
   if (page === 'drops') loadDropsList();
   if (page === 'cowork') { populateWeekSelects(); loadCoworkPage(); }
   if (page === 'finalists') { populateWeekSelects(); loadFinalistsPage(); }
+  if (page === 'ideas') loadIdeasPage();
   if (page === 'marketing') { populateWeekSelects(); loadMarketingPage(); }
   if (page === 'analytics') { populateWeekSelects(); loadAnalyticsPage(); }
   if (page === 'config') loadConfig('teejano_rules', document.querySelector('.config-tabs .tab-btn'));
@@ -402,9 +406,16 @@ async function loadFinalistsPage() {
   container.innerHTML = '<div class="table-loading"><span class="spinner"></span> Loading...</div>';
 
   try {
-    const res = await fetch(`${API}/api/drops/${week}`);
-    const data = await res.json();
+    const [dropRes, briefsRes] = await Promise.all([
+      fetch(`${API}/api/drops/${week}`),
+      fetch(`${API}/api/drops/${week}/briefs`),
+    ]);
+    const data = await dropRes.json();
+    const briefsData = briefsRes.ok ? await briefsRes.json() : { briefs: [], mockups: [] };
+
     state.activeDropData = data;
+    state.briefs = briefsData.briefs ?? [];
+    state.mockups = briefsData.mockups ?? [];
 
     const finalists = data.finalists ?? [];
     state.approvalState = data.approved;
@@ -416,14 +427,20 @@ async function loadFinalistsPage() {
           <button class="btn btn-primary btn-sm" onclick="runScoring()">Run Scoring Now</button>
         </div>`;
     } else {
+      const approvedCount = finalists.filter(f => f.concept_approved).length;
       container.innerHTML = `
-        <div style="margin-bottom:12px;display:flex;gap:12px;align-items:center">
-          <span class="text-muted" style="font-size:12px">${finalists.length} finalists · ${data.listing_count ?? 0} listings</span>
-          ${data.listing_count ? '' : '<button class="btn btn-secondary btn-sm" onclick="runBriefs()">Generate Briefs & Listings</button>'}
-          ${data.listing_count ? '<button class="btn btn-danger btn-sm" onclick="publishDrop()">Publish to Shopify →</button>' : ''}
+        <div class="finalists-toolbar">
+          <span class="text-muted" style="font-size:12px">
+            ${finalists.length} designs · ${approvedCount} approved
+            ${data.listing_count ? ` · ${data.listing_count} listings` : ''}
+          </span>
+          <div style="display:flex;gap:8px">
+            ${data.listing_count ? '' : '<button class="btn btn-secondary btn-sm" onclick="runBriefs()">Generate Briefs & Mockups</button>'}
+            ${data.listing_count ? '<button class="btn btn-danger btn-sm" onclick="publishDrop()">Publish to Shopify →</button>' : ''}
+          </div>
         </div>
         <div class="finalist-grid">
-          ${finalists.map((c, i) => renderFinalistCard(c, i)).join('')}
+          ${finalists.map((c, i) => renderFinalistCard(c, i, state.briefs, state.mockups)).join('')}
         </div>
       `;
     }
@@ -454,43 +471,153 @@ async function loadFinalistsPage() {
   }
 }
 
-function renderFinalistCard(c, i) {
+function renderFinalistCard(c, i, briefs, mockups) {
   const score = c.total_score ?? 0;
   const fillClass = score >= 80 ? 'high' : score >= 65 ? 'mid' : '';
   const scores = c.scores ?? {};
+  const isApproved = !!c.concept_approved;
+
+  // Find briefs for this concept (VA + VB)
+  const conceptBriefs = (briefs ?? []).filter(b => b.concept_id === c.concept_id);
+
+  // Find mockup images for this concept (prefer front_on_model)
+  const conceptMockups = (mockups ?? []).filter(m => m.concept_id === c.concept_id);
+  const primaryMockup = conceptMockups.find(m => m.mockup_type === 'front_on_model') ?? conceptMockups[0];
 
   return `
-    <div class="finalist-card">
-      <div class="finalist-rank">#${i + 1} · Score: ${score}/100</div>
-      <div class="finalist-phrase">${escHtml(c.phrase_primary)}</div>
-      <div class="finalist-score-bar">
-        <div class="finalist-score-fill ${fillClass}" style="width:${score}%"></div>
-      </div>
-      <div class="finalist-meta">
-        <span class="badge badge-gray">${c.angle ?? '—'}</span>
-        ${c.bilingual_level && c.bilingual_level !== 'none' ? `<span class="badge badge-blue">Spanglish:${c.bilingual_level}</span>` : ''}
-      </div>
-      <div class="finalist-detail">${escHtml(c.audience ?? '')}</div>
-      ${scores.clarity !== undefined ? `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px;color:var(--text-dim);margin-top:4px;">
-          <span>Clarity: ${scores.clarity}/20</span>
-          <span>Texas-ness: ${scores.texas_ness}/20</span>
-          <span>Humor: ${scores.humor_punch}/20</span>
-          <span>Wearability: ${scores.wearability}/20</span>
-          <span>Print: ${scores.print_simplicity}/20</span>
+    <div class="finalist-card ${isApproved ? 'finalist-card--approved' : ''}" id="card-${c.concept_id}">
+      ${primaryMockup?.url ? `
+        <div class="finalist-mockup" onclick="openMockupModal('${escHtml(primaryMockup.url)}', '${escHtml(c.phrase_primary)}')">
+          <img src="${escHtml(primaryMockup.url)}" alt="${escHtml(c.phrase_primary)}" loading="lazy" onerror="this.parentElement.style.display='none'">
+          ${conceptMockups.length > 1 ? `<span class="mockup-count">${conceptMockups.length} views</span>` : ''}
         </div>` : ''}
-      ${c.variants?.length ? `
-        <div class="finalist-variants">
-          ${c.variants.map(v => `
-            <div class="variant-row">
-              <span class="variant-label">${v.label}:</span>
-              <span class="variant-phrase">${escHtml(v.phrase)}</span>
-            </div>
-          `).join('')}
-        </div>` : ''}
-      <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">${escHtml(c.sell_thesis ?? '')}</div>
+
+      <div class="finalist-card-body">
+        <div class="finalist-card-header">
+          <div class="finalist-rank">#${i + 1} · ${score}/100</div>
+          <div class="finalist-card-actions">
+            <button class="btn-icon ${isApproved ? 'btn-icon--active' : ''}" title="${isApproved ? 'Approved — click to revoke' : 'Approve this design'}"
+              onclick="toggleConceptApproval('${c.concept_id}', ${isApproved})">
+              ${isApproved ? '✓' : '○'}
+            </button>
+            <button class="btn-icon" title="Edit this design" onclick="editConcept('${c.concept_id}')">✏</button>
+          </div>
+        </div>
+
+        <div class="finalist-phrase">${escHtml(c.phrase_primary)}</div>
+        <div class="finalist-score-bar">
+          <div class="finalist-score-fill ${fillClass}" style="width:${score}%"></div>
+        </div>
+
+        <div class="finalist-meta">
+          <span class="badge badge-gray">${c.angle ?? '—'}</span>
+          ${c.bilingual_level && c.bilingual_level !== 'none' ? `<span class="badge badge-blue">Spanglish:${c.bilingual_level}</span>` : ''}
+          ${isApproved ? '<span class="badge badge-green">Approved</span>' : ''}
+        </div>
+
+        <div class="finalist-detail">${escHtml(c.audience ?? '')}</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">${escHtml(c.sell_thesis ?? '')}</div>
+
+        ${scores.clarity !== undefined ? `
+          <div class="score-grid">
+            <span>Clarity: ${scores.clarity}/20</span>
+            <span>Texas-ness: ${scores.texas_ness}/20</span>
+            <span>Humor: ${scores.humor_punch}/20</span>
+            <span>Wearability: ${scores.wearability}/20</span>
+            <span>Print: ${scores.print_simplicity}/20</span>
+          </div>` : ''}
+
+        ${conceptBriefs.length ? `
+          <details class="brief-details">
+            <summary>Brief — ${conceptBriefs.length} variant${conceptBriefs.length > 1 ? 's' : ''}</summary>
+            ${conceptBriefs.map(b => `
+              <div class="brief-variant">
+                <div class="brief-variant-label">${escHtml(b.variant_label ?? '')}</div>
+                <div class="brief-row"><span>Layout</span><span>${escHtml(b.layout_map?.layout_type ?? '—')}</span></div>
+                <div class="brief-row"><span>Font</span><span>${escHtml(b.layout_map?.font_primary ?? '—')}</span></div>
+                <div class="brief-row"><span>Garment</span><span>${escHtml(b.colorways?.garment_color ?? '—')}</span></div>
+                <div class="brief-row"><span>Ink colors</span><span>${(b.colorways?.ink_colors ?? []).map(ic => ic.name).join(', ') || '—'}</span></div>
+                <div class="brief-row"><span>Placement</span><span>${escHtml(b.print_specs?.placement ?? '—')} ${b.print_specs ? `· ${b.print_specs.width_inches}"×${b.print_specs.height_inches}"` : ''}</span></div>
+                ${b.icon_notes ? `<div class="brief-row brief-row--full"><span>Icons/Art</span><span>${escHtml(b.icon_notes)}</span></div>` : ''}
+              </div>
+            `).join('')}
+          </details>` : ''}
+      </div>
     </div>
   `;
+}
+
+async function toggleConceptApproval(conceptId, currentlyApproved) {
+  const week = state.activeWeek;
+  if (!week) return;
+  try {
+    const res = await fetch(`${API}/api/drops/${week}/finalists/${conceptId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ concept_approved: !currentlyApproved }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    showToast(!currentlyApproved ? 'Design approved ✓' : 'Approval removed', !currentlyApproved ? 'success' : '');
+    await loadFinalistsPage();
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+}
+
+function editConcept(conceptId) {
+  const concept = (state.activeDropData?.finalists ?? []).find(f => f.concept_id === conceptId);
+  if (!concept) return;
+
+  document.getElementById('edit-concept-id').value = conceptId;
+  document.getElementById('edit-phrase').value = concept.phrase_primary ?? '';
+  document.getElementById('edit-sell-thesis').value = concept.sell_thesis ?? '';
+  document.getElementById('edit-audience').value = concept.audience ?? '';
+  document.getElementById('edit-notes').value = concept.imagery_notes ?? '';
+
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+}
+
+async function saveConceptEdit() {
+  const conceptId = document.getElementById('edit-concept-id').value;
+  const week = state.activeWeek;
+  if (!conceptId || !week) return;
+
+  const payload = {
+    phrase_primary: document.getElementById('edit-phrase').value.trim(),
+    sell_thesis: document.getElementById('edit-sell-thesis').value.trim(),
+    audience: document.getElementById('edit-audience').value.trim(),
+    imagery_notes: document.getElementById('edit-notes').value.trim(),
+  };
+
+  try {
+    const res = await fetch(`${API}/api/drops/${week}/finalists/${conceptId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    showToast('Design updated!', 'success');
+    closeEditModal();
+    await loadFinalistsPage();
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+}
+
+function openMockupModal(url, phrase) {
+  document.getElementById('mockup-modal-img').src = url;
+  document.getElementById('mockup-modal-label').textContent = phrase;
+  document.getElementById('mockup-modal').classList.add('open');
+}
+
+function closeMockupModal() {
+  document.getElementById('mockup-modal').classList.remove('open');
 }
 
 async function toggleApproval() {
@@ -764,6 +891,216 @@ function renderMarkdown(md) {
     .replace(/\n{2,}/g, '</p><p>')
     .replace(/^(?!<[hlp])/gm, '')
     .trim();
+}
+
+// ─────────────────────────────────────────────
+// IDEAS PAGE — Holiday Calendar + Seed Generator
+// ─────────────────────────────────────────────
+
+async function loadIdeasPage() {
+  await loadHolidayCalendar();
+}
+
+async function loadHolidayCalendar() {
+  const container = document.getElementById('holiday-list');
+  try {
+    const res = await fetch(`${API}/api/ideas/holidays`);
+    const data = await res.json();
+    state.holidays = data.holidays ?? [];
+    renderHolidayCalendar(state.holidays);
+    populateHolidaySelect(state.holidays);
+  } catch (e) {
+    container.innerHTML = `<div class="table-loading text-red">Could not load calendar: ${e.message}</div>`;
+  }
+}
+
+function renderHolidayCalendar(holidays) {
+  const container = document.getElementById('holiday-list');
+
+  // Split into sections: needs action now, coming up, future
+  const urgent  = holidays.filter(h => h.urgency === 'urgent' || h.urgency === 'soon');
+  const ok      = holidays.filter(h => h.urgency === 'ok');
+  const future  = holidays.filter(h => h.urgency === 'future');
+
+  let html = '';
+
+  if (urgent.length) {
+    html += `<div class="holiday-section-label holiday-section-label--urgent">⚡ Act Now</div>`;
+    html += urgent.map(h => renderHolidayRow(h)).join('');
+  }
+  if (ok.length) {
+    html += `<div class="holiday-section-label">Coming Up — Start Your Drop</div>`;
+    html += ok.map(h => renderHolidayRow(h)).join('');
+  }
+  if (future.length) {
+    html += `<div class="holiday-section-label">On the Horizon</div>`;
+    html += future.map(h => renderHolidayRow(h)).join('');
+  }
+
+  container.innerHTML = html || '<div class="table-loading">No upcoming holidays found.</div>';
+}
+
+function renderHolidayRow(h) {
+  const urgencyLabel = {
+    urgent: 'OVERDUE — start now',
+    soon:   'START THIS WEEK',
+    ok:     `Start by ${h.startDate}`,
+    future: `Start by ${h.startDate}`,
+  }[h.urgency] ?? '';
+
+  const daysLabel = h.daysUntilHoliday === 0
+    ? 'Today!'
+    : h.daysUntilHoliday < 0
+    ? `${Math.abs(h.daysUntilHoliday)}d ago`
+    : `${h.daysUntilHoliday} days away`;
+
+  const startLabel = h.daysUntilStart <= 0
+    ? `${Math.abs(h.daysUntilStart)}d past start`
+    : `${h.daysUntilStart}d until start`;
+
+  return `
+    <div class="holiday-row urgency-${h.urgency}">
+      <div class="holiday-row-left">
+        <span class="holiday-emoji">${h.emoji}</span>
+        <div class="holiday-info">
+          <div class="holiday-name">${escHtml(h.name)}</div>
+          <div class="holiday-note">${escHtml(h.note)}</div>
+          <div class="holiday-tags">
+            ${h.tags.map(t => `<span class="badge badge-gray">${t}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="holiday-row-right">
+        <div class="holiday-date">${escHtml(h.date)}</div>
+        <div class="holiday-days">${daysLabel}</div>
+        <div class="holiday-urgency-label urgency-text-${h.urgency}">${urgencyLabel}</div>
+        <div class="holiday-start-note">${startLabel} · ${h.leadWeeks}wk lead</div>
+        <button class="btn btn-sm btn-outline" onclick="pinHolidayToSeed('${escHtml(h.name)}')">
+          Use for Seeds →
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function populateHolidaySelect(holidays) {
+  const sel = document.getElementById('seed-holiday-pick');
+  if (!sel) return;
+  // Preserve existing empty option
+  sel.innerHTML = '<option value="">— Any / no specific holiday —</option>';
+  holidays.forEach(h => {
+    const opt = document.createElement('option');
+    opt.value = h.name;
+    opt.dataset.tags = (h.tags ?? []).join(',');
+    opt.textContent = `${h.emoji} ${h.name} (${h.date})`;
+    sel.appendChild(opt);
+  });
+}
+
+function pinHolidayToSeed(holidayName) {
+  const sel = document.getElementById('seed-holiday-pick');
+  if (sel) sel.value = holidayName;
+  document.getElementById('seed-preferences')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('seed-preferences')?.focus();
+}
+
+async function generateSeeds() {
+  const preferences = document.getElementById('seed-preferences')?.value?.trim() ?? '';
+  const sel = document.getElementById('seed-holiday-pick');
+  const holiday = sel?.value ?? '';
+  const holidayTags = sel?.selectedOptions[0]?.dataset?.tags?.split(',').filter(Boolean) ?? [];
+
+  const container = document.getElementById('seeds-container');
+  container.innerHTML = '<div class="table-loading"><span class="spinner"></span> Generating seeds...</div>';
+
+  try {
+    const res = await fetch(`${API}/api/ideas/seeds`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ preferences, holiday, holiday_tags: holidayTags }),
+    });
+    const data = await res.json();
+    _lastSeeds = data.seeds ?? [];
+    renderSeeds(_lastSeeds, preferences, holiday);
+  } catch (e) {
+    container.innerHTML = `<div class="table-loading text-red">Error: ${e.message}</div>`;
+  }
+}
+
+function renderSeeds(seeds, preferences, holiday) {
+  const container = document.getElementById('seeds-container');
+  if (!seeds.length) {
+    container.innerHTML = '<div class="table-loading">No seeds generated. Try adding more theme keywords.</div>';
+    return;
+  }
+
+  const context = [holiday && `Holiday: ${holiday}`, preferences && `Themes: ${preferences}`]
+    .filter(Boolean).join(' · ');
+
+  container.innerHTML = `
+    <div class="seeds-header">
+      <div>
+        <div class="section-title" style="margin:0 0 4px">${seeds.length} Concept Seeds</div>
+        ${context ? `<div style="font-size:12px;color:var(--text-dim)">${escHtml(context)}</div>` : ''}
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="copyAllSeeds()">Copy All as Prompt Seed</button>
+    </div>
+    <div class="seeds-grid" id="seeds-grid">
+      ${seeds.map((s, i) => renderSeedCard(s, i)).join('')}
+    </div>
+  `;
+}
+
+function renderSeedCard(s, i) {
+  const angleLabel = (s.angle ?? '').replace(/_/g, ' ');
+  return `
+    <div class="seed-card ${s.is_holiday_seed ? 'seed-card--holiday' : ''}">
+      ${s.is_holiday_seed ? '<div class="seed-holiday-badge">🎯 Holiday Tie-in</div>' : ''}
+      <div class="seed-phrase">"${escHtml(s.phrase)}"</div>
+      <div class="seed-angle">${escHtml(angleLabel)}</div>
+      <div class="seed-audience">Target: ${escHtml(s.audience)}</div>
+      <div class="seed-thesis">${escHtml(s.sell_thesis)}</div>
+      <div class="seed-actions">
+        <button class="btn btn-sm btn-outline" onclick="copySeed(${i})">Copy</button>
+        <button class="btn btn-sm btn-primary" onclick="useAsSeed(${i})">Use in Cowork →</button>
+      </div>
+    </div>
+  `;
+}
+
+// Seeds array for copy/use actions (populated inside generateSeeds)
+let _lastSeeds = [];
+
+function copySeed(i) {
+  const s = _lastSeeds[i];
+  if (!s) return;
+  const text = `Phrase: "${s.phrase}"\nAngle: ${s.angle}\nAudience: ${s.audience}\nSell thesis: ${s.sell_thesis}`;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!', 'success'));
+}
+
+function copyAllSeeds() {
+  if (!_lastSeeds.length) return;
+  const text = _lastSeeds.map((s, i) =>
+    `${i + 1}. "${s.phrase}" — ${s.angle} — ${s.audience}`
+  ).join('\n');
+  navigator.clipboard.writeText(text).then(() => showToast('All seeds copied!', 'success'));
+}
+
+function useAsSeed(i) {
+  const s = _lastSeeds[i];
+  if (!s) return;
+  // Store the seed hint and navigate to Cowork page
+  const hint = `SEED CONCEPT:\nPhrase: "${s.phrase}"\nAngle: ${s.angle}\nAudience: ${s.audience}\nSell thesis: ${s.sell_thesis}\n\n[Expand this into 5-8 full concepts in the format below...]`;
+  navigateTo('cowork');
+  // Pre-fill a note in the first response box after a tick
+  setTimeout(() => {
+    const ta = document.getElementById('response-chatgpt');
+    if (ta && !ta.value.trim()) {
+      ta.value = hint;
+      ta.focus();
+      showToast('Seed concept added to ChatGPT response box', 'success');
+    }
+  }, 200);
 }
 
 // ─────────────────────────────────────────────

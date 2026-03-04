@@ -4,17 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Teejano Agency</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <nav class="sidebar">
   <div class="sidebar-brand">
-    <span class="brand-logo">🤠</span>
-    <span class="brand-name">TEEJANO</span>
-    <span class="brand-sub">AGENCY</span>
+    <div class="brand-wordmark">TEEJANO <span class="brand-star">★</span></div>
+    <div class="brand-sub">AGENCY DASHBOARD</div>
   </div>
   <ul class="nav-links">
     <li><a href="#" data-page="dashboard" class="active">
@@ -28,6 +27,9 @@
     </a></li>
     <li><a href="#" data-page="finalists">
       <span class="nav-icon">★</span> Finalists
+    </a></li>
+    <li><a href="#" data-page="ideas">
+      <span class="nav-icon">💡</span> Ideas
     </a></li>
     <li><a href="#" data-page="marketing">
       <span class="nav-icon">◎</span> Marketing
@@ -239,6 +241,47 @@
     </div>
   </section>
 
+  <!-- IDEAS -->
+  <section id="page-ideas" class="page">
+    <div class="page-header">
+      <h1>Ideas &amp; Calendar</h1>
+    </div>
+    <p class="page-desc">Plan your drops around key dates. Enter your current themes and preferences to generate concept seeds you can take straight into ChatGPT or Gemini.</p>
+
+    <!-- Holiday Calendar -->
+    <div class="section-title">Upcoming Holiday Calendar</div>
+    <div class="ideas-legend">
+      <span class="urgency-dot urgency-urgent"></span> Start now — cutting it close
+      <span class="urgency-dot urgency-soon" style="margin-left:16px"></span> Start this week
+      <span class="urgency-dot urgency-ok" style="margin-left:16px"></span> On track
+      <span class="urgency-dot urgency-future" style="margin-left:16px"></span> Plenty of time
+    </div>
+    <div id="holiday-list" class="holiday-list">
+      <div class="table-loading"><span class="spinner"></span> Loading calendar...</div>
+    </div>
+
+    <!-- Seed Generator -->
+    <div class="section-title" style="margin-top:36px">Concept Seed Generator</div>
+    <div class="seed-box">
+      <div class="seed-box-top">
+        <div class="seed-input-wrap">
+          <label class="form-label" for="seed-preferences">Your themes &amp; preferences</label>
+          <textarea id="seed-preferences" class="form-textarea" rows="3"
+            placeholder="E.g. summer heat, BBQ season, gym culture, Tejano pride, transplants moving to Austin..."></textarea>
+        </div>
+        <div class="seed-holiday-wrap">
+          <label class="form-label" for="seed-holiday-pick">Pin to a holiday <span class="text-muted">(optional)</span></label>
+          <select id="seed-holiday-pick" class="week-selector select-full">
+            <option value="">— Any / no specific holiday —</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary seed-generate-btn" onclick="generateSeeds()">Generate Concept Seeds →</button>
+    </div>
+
+    <div id="seeds-container" style="margin-top:24px"></div>
+  </section>
+
   <!-- MARKETING -->
   <section id="page-marketing" class="page">
     <div class="page-header">
@@ -287,6 +330,48 @@
     </div>
   </section>
 </main>
+
+<!-- EDIT CONCEPT MODAL -->
+<div class="modal-overlay" id="edit-modal" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Design</span>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <input type="hidden" id="edit-concept-id">
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Phrase</label>
+        <input type="text" id="edit-phrase" class="form-input" placeholder="Main phrase...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sell Thesis</label>
+        <textarea id="edit-sell-thesis" class="form-textarea" rows="2" placeholder="Why this sells..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Audience</label>
+        <input type="text" id="edit-audience" class="form-input" placeholder="Who buys this...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Art / Icon Notes</label>
+        <textarea id="edit-notes" class="form-textarea" rows="2" placeholder="Visual direction, icons, imagery..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveConceptEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- MOCKUP LIGHTBOX MODAL -->
+<div class="modal-overlay modal-overlay--dark" id="mockup-modal" onclick="closeMockupModal()">
+  <div class="mockup-lightbox">
+    <div class="mockup-lightbox-label" id="mockup-modal-label"></div>
+    <img id="mockup-modal-img" src="" alt="Mockup">
+    <button class="mockup-lightbox-close" onclick="closeMockupModal()">✕ Close</button>
+  </div>
+</div>
 
 <!-- TOAST NOTIFICATION -->
 <div id="toast" class="toast"></div>
